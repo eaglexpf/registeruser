@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"registeruser/entity/global"
 	"registeruser/log"
+	"registeruser/middleware"
 	"time"
 )
 
 func router() *gin.Engine {
 	r := gin.Default()
-	//gin.SetMode("debug")
+	r.Use(middleware.LoggerMiddleware())
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"code": 0,
