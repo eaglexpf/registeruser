@@ -12,23 +12,31 @@ var (
 )
 
 type config struct {
-	App   App   `json:"app"`
-	Log   Log   `json:"log"`
-	Mysql Mysql `json:"mysql"`
-	Redis Redis `json:"redis"`
+	App   config_app   `json:"app"`
+	Log   config_log   `json:"log"`
+	Mysql config_mysql `json:"mysql"`
+	Redis config_redis `json:"redis"`
 }
 
-type App struct {
+type config_app struct {
 	Addr  string `json:"addr"`
 	Mysql bool   `json:"mysql"`
 	Redis bool   `json:"redis"`
 }
 
-type Log struct {
-	Path string `json:"path"`
+type config_log struct {
+	File config_log_file `json:"file13"`
 }
 
-type Mysql struct {
+type config_log_file struct {
+	Status  bool   `json:"status"`
+	Path    string `json:"path"`
+	MaxSize int    `json:"max_size"`
+	DayNum  int    `json:"day_num"`
+	FileNum int    `json:"file_num"`
+}
+
+type config_mysql struct {
 	Addr        string `json:"addr"`
 	DbName      string `json:"db_name"`
 	Username    string `json:"username"`
@@ -39,7 +47,7 @@ type Mysql struct {
 	LogMode     bool   `json:"log_mode"`
 }
 
-type Redis struct {
+type config_redis struct {
 	Addr     string `json:"addr"`
 	Password string `json:"password"`
 	Db       int    `json:"db"`

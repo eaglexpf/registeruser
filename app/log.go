@@ -1,27 +1,33 @@
 package app
 
 import (
+	"github.com/natefinch/lumberjack"
 	"github.com/sirupsen/logrus"
 	system_log "log"
+	"registeruser/entity/global"
 	"registeruser/log"
 )
 
 func InitLog() {
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{})
-	//logFile := global.CONFIG.Log.Path
-	//var file, err = os.OpenFile(logFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	//if err != nil {
-	//	fmt.Println("Could Not Open Log File : " + err.Error())
-	//}
-	//logger.SetOutput(io.MultiWriter(file, os.Stdout))
 	system_log.SetOutput(logger.Writer())
 	log.Log.Logger = logger
+	if global.CONFIG.Log.File.Status {
+		writeFile()
+	}
 }
 
-//func writeFile()  {
-//	log.Log.Logger.SetOutput()
-//}
+func writeFile() {
+	log.Log.Logger.SetOutput(&lumberjack.Logger{
+		Filename:   global.CONFIG.Log.File.Path,
+		MaxSize:    global.CONFIG.Log.File.MaxSize, // 文件大小[单位mb]
+		MaxBackups: global.CONFIG.Log.File.FileNum, // 保留文件个数
+		MaxAge:     global.CONFIG.Log.File.DayNum,  // 保留天数
+		Compress:   true,                           // 是否压缩日志
+	})
+}
+
 //
 //func writeKafka()  {
 //
