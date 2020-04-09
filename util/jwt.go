@@ -3,7 +3,7 @@ package util
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
-	"registeruser/entity/global"
+	"registeruser/conf/global"
 	"time"
 )
 

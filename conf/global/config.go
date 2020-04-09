@@ -1,13 +1,13 @@
 package global
 
 import (
+	"database/sql"
 	"github.com/go-redis/redis"
-	"github.com/jinzhu/gorm"
 )
 
 var (
 	CONFIG config
-	DB     *gorm.DB
+	DB     *sql.DB
 	REDIS  *redis.Client
 	JWT    *JwtClaims
 )
@@ -27,15 +27,15 @@ type config_app struct {
 }
 
 type config_log struct {
-	File config_log_file `json:"file13"`
+	File config_log_file `json:"file"`
 }
 
 type config_log_file struct {
 	Status  bool   `json:"status"`
 	Path    string `json:"path"`
-	MaxSize int    `json:"max_size"`
-	DayNum  int    `json:"day_num"`
-	FileNum int    `json:"file_num"`
+	MaxSize int    `json:"max_size" mapstructure:"max_size"`
+	DayNum  int    `json:"day_num" mapstructure:"day_num"`
+	FileNum int    `json:"file_num" mapstructure:"file_num"`
 }
 
 type config_jwt struct {
@@ -46,12 +46,13 @@ type config_jwt struct {
 
 type config_mysql struct {
 	Addr        string `json:"addr"`
-	DbName      string `json:"db_name"`
+	DbName      string `json:"db_name" mapstructure:"db_name"`
 	Username    string `json:"username"`
 	Password    string `json:"password"`
 	Config      string `json:"config"`
-	MaxIdleConn int    `json:"max_idle_conn"`
-	MaxOpenConn int    `json:"max_open_conn"`
+	Prefix      string `json:"prefix"`
+	MaxIdleConn int    `json:"max_idle_conn" mapstructtrue:"max_idle_conn"`
+	MaxOpenConn int    `json:"max_open_conn" mapstructure:"max_open_conn"`
 	LogMode     bool   `json:"log_mode"`
 }
 

@@ -1,21 +1,22 @@
-package init
+package http
 
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
-	"registeruser/entity/global"
-	"registeruser/log"
-	"registeruser/middleware"
+	"os"
+	http_admin "registeruser/app/admin/server/http"
+	"registeruser/conf/global"
+	"registeruser/conf/log"
 	"registeruser/util"
 	"time"
 )
 
-func router() *gin.Engine {
-	r := gin.Default()
-	r.Use(middleware.LoggerMiddleware())
-	r.Use(middleware.CorsMiddleware())
-	r.Use(middleware.JWTMiddleware())
+func router(r *gin.Engine) *gin.Engine {
+	r.Use(loggerMiddleware())
+	r.Use(corsMiddleware())
+	//r.Use(jwtMiddleware())
 	r.GET("/", func(c *gin.Context) {
 		//jwt := NewJWT()
 		token, err := util.NewJWT().CreateToken(&global.JwtClaims{})
@@ -36,11 +37,14 @@ func router() *gin.Engine {
 			"sign": sign,
 		})
 	})
+	http_admin.Register(r)
 	return r
 }
 
 func Run() {
-	router := router()
+	gin.DefaultWriter = io.MultiWriter(log.Log.Logger.Writer(), os.Stdout)
+	//gin.DefaultWriter = log.Log.Logger.Writer()
+	router := router(gin.Default())
 	address := fmt.Sprintf(":%s", global.CONFIG.App.Addr)
 	server := &http.Server{
 		Addr:           address,

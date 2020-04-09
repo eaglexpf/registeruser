@@ -1,9 +1,9 @@
-package init
+package conf
 
 import (
 	"github.com/go-redis/redis"
-	"registeruser/entity/global"
-	"registeruser/log"
+	"registeruser/conf/global"
+	"registeruser/conf/log"
 )
 
 func initRedis() {

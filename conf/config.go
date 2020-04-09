@@ -1,11 +1,11 @@
-package init
+package conf
 
 import (
 	"flag"
 	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
-	"registeruser/entity/global"
+	"registeruser/conf/global"
 )
 
 func init() {

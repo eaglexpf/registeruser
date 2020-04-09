@@ -1,11 +1,11 @@
-package init
+package conf
 
 import (
 	"github.com/natefinch/lumberjack"
 	"github.com/sirupsen/logrus"
 	system_log "log"
-	"registeruser/entity/global"
-	"registeruser/log"
+	"registeruser/conf/global"
+	"registeruser/conf/log"
 )
 
 func initLog() {
