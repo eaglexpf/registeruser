@@ -13,6 +13,7 @@ import (
 func router() *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.LoggerMiddleware())
+	r.Use(middleware.CorsMiddleware())
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"code": 0,
