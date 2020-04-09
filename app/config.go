@@ -37,13 +37,18 @@ func init() {
 
 func load() {
 	// 加载log
-	InitLog()
+	initLog()
 	if global.CONFIG.App.Mysql {
 		// 加载mysql
-		InitMysql()
+		initMysql()
 	}
 	if global.CONFIG.App.Redis {
 		// 加载redis
-		InitRedis()
+		initRedis()
 	}
+}
+
+func Unload() {
+	closeMysql()
+	closeRedis()
 }

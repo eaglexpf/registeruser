@@ -8,7 +8,7 @@ import (
 	"registeruser/log"
 )
 
-func InitMysql() {
+func initMysql() {
 	admin := global.CONFIG.Mysql
 	if db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?%s",
 		admin.Username,
@@ -24,5 +24,15 @@ func InitMysql() {
 		global.DB.DB().SetMaxIdleConns(admin.MaxIdleConn)
 		global.DB.DB().SetMaxOpenConns(admin.MaxOpenConn)
 		log.Info("Mysql数据库已链接...")
+	}
+}
+
+func closeMysql() {
+	if global.DB == nil {
+		return
+	}
+	err := global.DB.Close()
+	if err != nil {
+		log.Infof("Mysql数据库关闭连接失败：%v", err)
 	}
 }

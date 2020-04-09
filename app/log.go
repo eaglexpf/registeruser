@@ -8,7 +8,7 @@ import (
 	"registeruser/log"
 )
 
-func InitLog() {
+func initLog() {
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{})
 	system_log.SetOutput(logger.Writer())

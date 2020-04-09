@@ -6,7 +6,7 @@ import (
 	"registeruser/log"
 )
 
-func InitRedis() {
+func initRedis() {
 	config := global.CONFIG.Redis
 	client := redis.NewClient(&redis.Options{
 		Addr:     config.Addr,
@@ -19,5 +19,15 @@ func InitRedis() {
 	} else {
 		global.REDIS = client
 		log.Info("redis已链接...")
+	}
+}
+
+func closeRedis() {
+	if global.REDIS == nil {
+		return
+	}
+	err := global.REDIS.Close()
+	if err != nil {
+		log.Infof("Redis关闭连接失败：%v", err)
 	}
 }
