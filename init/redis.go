@@ -1,4 +1,4 @@
-package app
+package init
 
 import (
 	"github.com/go-redis/redis"

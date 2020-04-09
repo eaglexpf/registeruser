@@ -1,7 +1,7 @@
 package main
 
 import (
-	"registeruser/app"
+	app "registeruser/init"
 )
 
 func main() {
