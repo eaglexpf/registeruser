@@ -16,7 +16,7 @@ func LoggerMiddleware() gin.HandlerFunc {
 		//结束时间
 		endTime := time.Now()
 		// 执行时间
-		latencyTime := endTime.Sub(startTime)
+		latencyTime := endTime.Sub(startTime).Milliseconds()
 		//请求方式
 		reqMethod := c.Request.Method
 		//请求路由

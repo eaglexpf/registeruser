@@ -9,11 +9,13 @@ var (
 	CONFIG config
 	DB     *gorm.DB
 	REDIS  *redis.Client
+	JWT    *JwtClaims
 )
 
 type config struct {
 	App   config_app   `json:"app"`
 	Log   config_log   `json:"log"`
+	Jwt   config_jwt   `json:"jwt"`
 	Mysql config_mysql `json:"mysql"`
 	Redis config_redis `json:"redis"`
 }
@@ -34,6 +36,12 @@ type config_log_file struct {
 	MaxSize int    `json:"max_size"`
 	DayNum  int    `json:"day_num"`
 	FileNum int    `json:"file_num"`
+}
+
+type config_jwt struct {
+	Sign    string `json:"sign"`
+	Express int    `json:"express"`
+	Issuer  string `json:"issuer"`
 }
 
 type config_mysql struct {
