@@ -7,6 +7,7 @@ import (
 	"registeruser/entity/global"
 	"registeruser/log"
 	"registeruser/middleware"
+	"registeruser/util"
 	"time"
 )
 
@@ -14,9 +15,10 @@ func router() *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.LoggerMiddleware())
 	r.Use(middleware.CorsMiddleware())
+	r.Use(middleware.JWTMiddleware())
 	r.GET("/", func(c *gin.Context) {
 		//jwt := NewJWT()
-		token, err := NewJWT().CreateToken(&global.JwtClaims{})
+		token, err := util.NewJWT().CreateToken(&global.JwtClaims{})
 		c.JSON(200, gin.H{
 			"code": 0,
 			"msg":  token,
@@ -26,7 +28,7 @@ func router() *gin.Engine {
 	r.GET("/index", func(c *gin.Context) {
 		//jwt := NewJWT()
 		sign := c.DefaultQuery("sign", "asdsadasdad")
-		token, err := NewJWT().ParseToken(sign)
+		token, err := util.NewJWT().ParseToken(sign)
 		c.JSON(200, gin.H{
 			"code": 0,
 			"msg":  token,
