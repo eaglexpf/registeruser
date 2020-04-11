@@ -1,39 +1,39 @@
 package http
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"registeruser/app/admin/entity"
 	"registeruser/app/admin/service"
 )
 
+var srv *service.Service
+
+func init() {
+	srv = service.NewService()
+}
+
 func Register(r *gin.Engine) *gin.Engine {
-	srv := service.NewService()
-	router := r.Group("/admin")
-	router.GET("/", func(c *gin.Context) {
-		//jwt := NewJWT()
-		//c.ShouldBindWith()
-		//token, err := util.NewJWT().CreateToken(&global.JwtClaims{})
-		var user entity.RequestAdminInsert
-		if err := c.ShouldBind(&user); err != nil {
-			c.JSON(400, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		token, err := srv.FindUserByUsername(c, c.DefaultQuery("username", "admin"))
-		if err != nil {
-			c.JSON(400, gin.H{
-				"err": fmt.Sprint(err),
-			})
-			return
-		}
-		c.JSON(200, gin.H{
-			"code": 0,
-			"msg":  token,
-			"err":  err,
-		})
-	})
+	router := r.Group("/admin/")
+	user := router.Group("user")
+	user.GET("/", adminUserList)
+	user.POST("register", registerAdminUser)
+	//srv := service.NewService()
+	//router.Any("/", func(c *gin.Context) {
+	//	fmt.Println("admin get")
+	//	//jwt := NewJWT()
+	//	//token, err := util.NewJWT().CreateToken(&global.JwtClaims{})
+	//	var user request.RequestRegisterAdminUser
+	//	if err := c.ShouldBind(&user); err != nil {
+	//		c.JSON(200, response.ErrorParamValidateMsg(fmt.Sprint(err)))
+	//		return
+	//	}
+	//	token, err := srv.FindUserByUsername(c, c.DefaultQuery("username", "admin"))
+	//	if err == nil {
+	//		// 账号已存在
+	//		c.JSON(200, response.ErrorFindAdminUser())
+	//		return
+	//	}
+	//	c.JSON(200, response.Success(token))
+	//})
 	return r
 
 }

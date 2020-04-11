@@ -9,34 +9,35 @@ import (
 	http_admin "registeruser/app/admin/server/http"
 	"registeruser/conf/global"
 	"registeruser/conf/log"
-	"registeruser/util"
+	"registeruser/util/ginMiddleware"
 	"time"
 )
 
 func router(r *gin.Engine) *gin.Engine {
-	r.Use(loggerMiddleware())
-	r.Use(corsMiddleware())
-	//r.Use(jwtMiddleware())
-	r.GET("/", func(c *gin.Context) {
-		//jwt := NewJWT()
-		token, err := util.NewJWT().CreateToken(&global.JwtClaims{})
-		c.JSON(200, gin.H{
-			"code": 0,
-			"msg":  token,
-			"err":  err,
-		})
-	})
-	r.GET("/index", func(c *gin.Context) {
-		//jwt := NewJWT()
-		sign := c.DefaultQuery("sign", "asdsadasdad")
-		token, err := util.NewJWT().ParseToken(sign)
-		c.JSON(200, gin.H{
-			"code": 0,
-			"msg":  token,
-			"err":  err,
-			"sign": sign,
-		})
-	})
+	r.Use(ginMiddleware.LoggerMiddleware())
+	r.Use(ginMiddleware.CorsMiddleware())
+	r.Use(ginMiddleware.RecoverMiddleware())
+	//r.Use(ginMiddleware.JWTMiddleware())
+	//r.GET("/", func(c *gin.Context) {
+	//	//jwt := NewJWT()
+	//	token, err := util.NewJWT().CreateToken(&global.JwtClaims{})
+	//	c.JSON(200, gin.H{
+	//		"code": 0,
+	//		"msg":  token,
+	//		"err":  err,
+	//	})
+	//})
+	//r.GET("/index", func(c *gin.Context) {
+	//	//jwt := NewJWT()
+	//	sign := c.DefaultQuery("sign", "asdsadasdad")
+	//	token, err := util.NewJWT().ParseToken(sign)
+	//	c.JSON(200, gin.H{
+	//		"code": 0,
+	//		"msg":  token,
+	//		"err":  err,
+	//		"sign": sign,
+	//	})
+	//})
 	http_admin.Register(r)
 	return r
 }

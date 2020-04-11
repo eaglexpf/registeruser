@@ -1,9 +1,9 @@
 package ginMiddleware
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"registeruser/conf/log"
 	"registeruser/entity/response"
 )
 
@@ -12,7 +12,8 @@ func RecoverMiddleware() gin.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				// 记录一个错误的日志
-				c.JSON(http.StatusServiceUnavailable, response.ErrorServiceUnavailable(fmt.Sprintf("捕获到一个致命错误：%v", err)))
+				log.Errorf("捕获到一个致命错误：", err)
+				c.JSON(http.StatusServiceUnavailable, response.ErrorServiceUnavailable())
 				return
 			}
 		}()

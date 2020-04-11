@@ -3,7 +3,7 @@ package conf
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/go-sql-driver/mysql"
 	"registeruser/conf/global"
 	"registeruser/conf/log"
 )

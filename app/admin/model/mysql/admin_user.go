@@ -8,22 +8,23 @@ import (
 	"registeruser/app/admin/model"
 	"registeruser/conf/global"
 	"registeruser/conf/log"
+	"registeruser/util/sqlUtil"
 	"time"
 )
 
 const (
-	QUERY_FIND_BY_ID = `select id,username,auth_key,password_hash,password_reset_token,email,nickname,avatar_url,status,
+	QUERY_FIND_BY_ID = `select id,uuid,username,password_hash,password_reset_token,email,nickname,avatar_url,status,
 				create_at,update_at,delete_at from admin_user where id=?`
-	QUERY_FIND_BY_UUID = `select id,username,auth_key,password_hash,password_reset_token,email,nickname,avatar_url,status,
+	QUERY_FIND_BY_UUID = `select id,uuid,username,password_hash,password_reset_token,email,nickname,avatar_url,status,
 				create_at,update_at,delete_at from admin_user where uuid=?`
-	QUERY_FIND_BY_USERNAME = `select id,username,auth_key,password_hash,password_reset_token,email,nickname,avatar_url,status,
+	QUERY_FIND_BY_USERNAME = `select id,uuid,username,password_hash,password_reset_token,email,nickname,avatar_url,status,
 				create_at,update_at,delete_at from admin_user where username=?`
-	QUERY_FIND_BY_EMAIL = `select id,username,auth_key,pass_hash,reset_pass_token,email,nickname,avatar_url,status,
+	QUERY_FIND_BY_EMAIL = `select id,uuid,username,password_hash,password_reset_token,email,nickname,avatar_url,status,
 				create_at,update_at,delete_at from admin_user where email=?`
-	QUERY_FIND_BY_MOBILE = `select id,username,auth_key,pass_hash,reset_pass_token,email,nickname,avatar_url,status,
+	QUERY_FIND_BY_MOBILE = `select id,uuid,username,password_hash,password_reset_token,email,nickname,avatar_url,status,
 				create_at,update_at,delete_at from admin_user where mobile=?`
-	QUERY_INSERT = `insert into admin_user ( username,auth_key,password_hash,password_reset_token,email,nickname,
-				avatar_url,status,create_at ) values ( ?, ?, ?, ?, ?, ?, ?, ?, ? )`
+	QUERY_INSERT = `insert into admin_user ( uuid,username,password_hash,email,nickname,
+				avatar_url,status,create_at ) values ( ?, ?, ?, ?, ?, ?, ?, ? )`
 	QUERY_UPDATE_INFO_BY_ID       = `update admin_user set nickname=?,avatar_url=?,update_at=? where id=?`
 	QUERY_UPDATE_INFO_BY_UUID     = `update admin_user set nickname=?,avatar_url=?,update_at=? where uuid=?`
 	QUERY_UPDATE_INFO_BY_USERNAME = `update admin_user set nickname=?,avatar_url=?,update_at=? where username=?`
@@ -51,12 +52,24 @@ func (this *adminUser) fetch(ctx context.Context, query string, args ...interfac
 	}()
 
 	result := make([]*entity.AdminUser, 0)
+	columns, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
 	for rows.Next() {
 		row := new(entity.AdminUser)
-		err := rows.Scan(&row)
+
+		addrs, err := sqlUtil.AddrsEncode(row, columns)
 		if err != nil {
 			return nil, err
 		}
+
+		err = rows.Scan(addrs...)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, row)
 	}
 	return result, nil
 }
@@ -99,7 +112,7 @@ func (this *adminUser) InsertUser(ctx context.Context, user *entity.AdminUser) e
 		return err
 	}
 
-	res, err := stmt.Exec(ctx, user.UserName, user.Nickname)
+	res, err := stmt.ExecContext(ctx, user.UUID, user.UserName, user.PasswordHash, user.Email, user.Nickname, user.AvatarUrl, user.Status, time.Now().Unix())
 	if err != nil {
 		log.Error("admin_user insert error:", err)
 		return err

@@ -1,18 +1,16 @@
 package entity
 
 type AdminUser struct {
-	ID             int64  `json:"-"`
-	UUID           string `json:"uuid"`
-	UserName       string `json:"username"`
-	AuthKey        string `json:"auth_key"`
-	PassHash       string `json:"-"`
-	ResetPassToken string `json:"-"`
-	Email          string `json:"email"`
-	Mobile         string `json:"mobile"`
-	Nickname       string `json:"nickname"`
-	AvatarUrl      string `json:"avatar_url"`
-	Status         int    `json:"status"`
-	CreateAt       int64  `json:"create_at"`
-	UpdateAt       int64  `json:"update_at"`
-	DeleteAt       int64  `json:"delete_at"`
+	ID                 int64  `json:"-" sql:"id"`
+	UUID               string `json:"uuid" sql:"uuid"`
+	UserName           string `json:"username" sql:"username"`
+	PasswordHash       string `json:"-" sql:"password_hash"`
+	PasswordResetToken string `json:"-" sql:"password_reset_token"`
+	Email              string `json:"email" sql:"email"`
+	Nickname           string `json:"nickname" sql:"nickname"`
+	AvatarUrl          string `json:"avatar_url" sql:"avatar_url"`
+	Status             int    `json:"status" sql:"status"`
+	CreateAt           int64  `json:"create_at" sql:"create_at"`
+	UpdateAt           int64  `json:"update_at" sql:"update_at"`
+	DeleteAt           int64  `json:"delete_at" sql:"delete_at"`
 }
