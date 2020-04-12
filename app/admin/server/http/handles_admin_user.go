@@ -3,7 +3,7 @@ package http
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"registeruser/app/admin/entity"
+	"registeruser/app/admin/entity/dao"
 	"registeruser/app/admin/entity/request"
 	"registeruser/app/admin/entity/response"
 )
@@ -102,7 +102,7 @@ func adminUserRefreshToken(c *gin.Context) {
 		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser获取失败"))
 		return
 	}
-	adminUser, ok := user.(*entity.AdminUser)
+	adminUser, ok := user.(*dao.AdminUser)
 	if !ok {
 		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser类型获取失败"))
 		return
@@ -138,7 +138,7 @@ func adminUserUpdateInfo(c *gin.Context) {
 		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser获取失败"))
 		return
 	}
-	adminUser, ok := user.(*entity.AdminUser)
+	adminUser, ok := user.(*dao.AdminUser)
 	if !ok {
 		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser类型获取失败"))
 		return
@@ -185,7 +185,7 @@ func adminUserUpdatePwd(c *gin.Context) {
 		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser获取失败"))
 		return
 	}
-	adminUser, ok := user.(*entity.AdminUser)
+	adminUser, ok := user.(*dao.AdminUser)
 	if !ok {
 		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser类型获取失败"))
 		return

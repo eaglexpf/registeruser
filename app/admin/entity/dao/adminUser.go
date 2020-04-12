@@ -1,5 +1,5 @@
-// 项目数据定义
-package entity
+// 交互数据定义
+package dao
 
 // adminUser后台用户类型
 type AdminUser struct {

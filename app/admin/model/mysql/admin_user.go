@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"registeruser/app/admin/entity"
+	"registeruser/app/admin/entity/dao"
 	"registeruser/app/admin/model"
 	"registeruser/conf/global"
 	"registeruser/conf/log"
@@ -36,7 +36,7 @@ func NewAdminUserModel() model.AdminUserModel {
 type adminUser struct {
 }
 
-func (this *adminUser) fetch(ctx context.Context, query string, args ...interface{}) ([]*entity.AdminUser, error) {
+func (this *adminUser) fetch(ctx context.Context, query string, args ...interface{}) ([]*dao.AdminUser, error) {
 	rows, err := global.DB.QueryContext(ctx, query, args...)
 	if err != nil {
 		log.Error("admin_user fetch query error: ", err)
@@ -48,13 +48,13 @@ func (this *adminUser) fetch(ctx context.Context, query string, args ...interfac
 		}
 	}()
 
-	result := make([]*entity.AdminUser, 0)
+	result := make([]*dao.AdminUser, 0)
 	columns, err := rows.Columns()
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		row := new(entity.AdminUser)
+		row := new(dao.AdminUser)
 
 		addrs, err := sqlUtil.AddrsEncode(row, columns)
 		if err != nil {
@@ -71,7 +71,7 @@ func (this *adminUser) fetch(ctx context.Context, query string, args ...interfac
 	return result, nil
 }
 
-func (this *adminUser) findUserRow(ctx context.Context, query string, args ...interface{}) (*entity.AdminUser, error) {
+func (this *adminUser) findUserRow(ctx context.Context, query string, args ...interface{}) (*dao.AdminUser, error) {
 	list, err := this.fetch(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -82,27 +82,27 @@ func (this *adminUser) findUserRow(ctx context.Context, query string, args ...in
 	return list[0], nil
 }
 
-func (this *adminUser) FindUserByID(ctx context.Context, id int64) (*entity.AdminUser, error) {
+func (this *adminUser) FindUserByID(ctx context.Context, id int64) (*dao.AdminUser, error) {
 	return this.findUserRow(ctx, QUERY_FIND_BY_ID, id)
 }
 
-func (this *adminUser) FindUserByUUID(ctx context.Context, uuid string) (*entity.AdminUser, error) {
+func (this *adminUser) FindUserByUUID(ctx context.Context, uuid string) (*dao.AdminUser, error) {
 	return this.findUserRow(ctx, QUERY_FIND_BY_UUID, uuid)
 }
 
-func (this *adminUser) FindUserByUsername(ctx context.Context, username string) (*entity.AdminUser, error) {
+func (this *adminUser) FindUserByUsername(ctx context.Context, username string) (*dao.AdminUser, error) {
 	return this.findUserRow(ctx, QUERY_FIND_BY_USERNAME, username)
 }
 
-func (this *adminUser) FindUserByEmail(ctx context.Context, email string) (*entity.AdminUser, error) {
+func (this *adminUser) FindUserByEmail(ctx context.Context, email string) (*dao.AdminUser, error) {
 	return this.findUserRow(ctx, QUERY_FIND_BY_EMAIL, email)
 }
 
-func (this *adminUser) FindUserByMobile(ctx context.Context, mobile string) (*entity.AdminUser, error) {
+func (this *adminUser) FindUserByMobile(ctx context.Context, mobile string) (*dao.AdminUser, error) {
 	return this.findUserRow(ctx, QUERY_FIND_BY_MOBILE, mobile)
 }
 
-func (this *adminUser) InsertUser(ctx context.Context, user *entity.AdminUser) error {
+func (this *adminUser) InsertUser(ctx context.Context, user *dao.AdminUser) error {
 	stmt, err := global.DB.PrepareContext(ctx, QUERY_INSERT)
 	if err != nil {
 		log.Error("admin_user insert prepare err: ", err)
@@ -145,10 +145,10 @@ func (this *adminUser) updateUser(ctx context.Context, query string, args ...int
 	return nil
 }
 
-func (this *adminUser) UpdateUserInfoByUUID(ctx context.Context, user *entity.AdminUser) error {
+func (this *adminUser) UpdateUserInfoByUUID(ctx context.Context, user *dao.AdminUser) error {
 	return this.updateUser(ctx, QUERY_UPDATE_INFO_BY_UUID, user.Nickname, user.AvatarUrl, time.Now().Unix(), user.UUID)
 }
 
-func (a *adminUser) UpdateUserPwdByUUID(ctx context.Context, user *entity.AdminUser) error {
+func (a *adminUser) UpdateUserPwdByUUID(ctx context.Context, user *dao.AdminUser) error {
 	return a.updateUser(ctx, QUERY_UPDATE_PWD_BY_UUID, user.PasswordHash, time.Now().Unix(), user.UUID)
 }

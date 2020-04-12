@@ -6,7 +6,7 @@ import (
 	"fmt"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
-	"registeruser/app/admin/entity"
+	"registeruser/app/admin/entity/dao"
 	"registeruser/app/admin/entity/request"
 	"registeruser/conf/global"
 	"registeruser/util/jwt"
@@ -19,8 +19,8 @@ const (
 )
 
 // 新建一个后台用户服务
-func (s *Service) AdminUserRegister(ctx context.Context, request *request.RequestRegisterAdminUser) (adminUser *entity.AdminUser, err error) {
-	adminUser = new(entity.AdminUser)
+func (s *Service) AdminUserRegister(ctx context.Context, request *request.RequestRegisterAdminUser) (adminUser *dao.AdminUser, err error) {
+	adminUser = new(dao.AdminUser)
 	if request.Password != request.RepeatPwd {
 		err = errors.New("两次密码不一致")
 		return
@@ -86,7 +86,7 @@ func (s *Service) AdminUserLogin(ctx context.Context, request *request.RequestAd
 	return
 }
 
-func (s *Service) AdminUserRefreshToken(ctx context.Context, adminUser *entity.AdminUser) (token string, err error) {
+func (s *Service) AdminUserRefreshToken(ctx context.Context, adminUser *dao.AdminUser) (token string, err error) {
 	token, err = jwt.NewJWT().CreateToken(&global.JwtClaims{
 		UUID: adminUser.UUID,
 	})
@@ -94,8 +94,8 @@ func (s *Service) AdminUserRefreshToken(ctx context.Context, adminUser *entity.A
 }
 
 // 修改后台用户的昵称和头像
-func (s *Service) AdminUserUpdateInfo(ctx context.Context, updateData *request.RequestAdminUserUpdateInfo) (adminUser *entity.AdminUser, err error) {
-	adminUser = &entity.AdminUser{
+func (s *Service) AdminUserUpdateInfo(ctx context.Context, updateData *request.RequestAdminUserUpdateInfo) (adminUser *dao.AdminUser, err error) {
+	adminUser = &dao.AdminUser{
 		UUID:      updateData.UUID,
 		Nickname:  updateData.Nickname,
 		AvatarUrl: updateData.AvatarUrl,
@@ -105,7 +105,7 @@ func (s *Service) AdminUserUpdateInfo(ctx context.Context, updateData *request.R
 }
 
 // 修改后台用户的密码
-func (s *Service) AdminUserResetPwd(ctx context.Context, updateData *request.RequestAdminUserResetPwd) (adminUser *entity.AdminUser, err error) {
+func (s *Service) AdminUserResetPwd(ctx context.Context, updateData *request.RequestAdminUserResetPwd) (adminUser *dao.AdminUser, err error) {
 	if updateData.Password != updateData.OldPwd {
 		err = errors.New("两次密码不一致")
 		return
@@ -115,7 +115,7 @@ func (s *Service) AdminUserResetPwd(ctx context.Context, updateData *request.Req
 	if err != nil {
 		return
 	}
-	adminUser = &entity.AdminUser{
+	adminUser = &dao.AdminUser{
 		UUID:         updateData.UUID,
 		PasswordHash: string(hash),
 	}
@@ -124,16 +124,16 @@ func (s *Service) AdminUserResetPwd(ctx context.Context, updateData *request.Req
 }
 
 // 根据uuid查询后台用户
-func (s *Service) AdminUserFindByUUID(ctx context.Context, uuid string) (*entity.AdminUser, error) {
+func (s *Service) AdminUserFindByUUID(ctx context.Context, uuid string) (*dao.AdminUser, error) {
 	return s.adminUserModel.FindUserByUUID(ctx, uuid)
 }
 
 // 根据username查询后台用户
-func (s *Service) AdminUserFindByUsername(ctx context.Context, username string) (*entity.AdminUser, error) {
+func (s *Service) AdminUserFindByUsername(ctx context.Context, username string) (*dao.AdminUser, error) {
 	return s.adminUserModel.FindUserByUsername(ctx, username)
 }
 
 // 根据Email查询后台用户
-func (s *Service) AdminUserFindByEmail(ctx context.Context, email string) (*entity.AdminUser, error) {
+func (s *Service) AdminUserFindByEmail(ctx context.Context, email string) (*dao.AdminUser, error) {
 	return s.adminUserModel.FindUserByEmail(ctx, email)
 }
