@@ -25,11 +25,8 @@ const (
 				create_at,update_at,delete_at from admin_user where mobile=?`
 	QUERY_INSERT = `insert into admin_user ( uuid,username,password_hash,email,nickname,
 				avatar_url,status,create_at ) values ( ?, ?, ?, ?, ?, ?, ?, ? )`
-	QUERY_UPDATE_INFO_BY_ID       = `update admin_user set nickname=?,avatar_url=?,update_at=? where id=?`
-	QUERY_UPDATE_INFO_BY_UUID     = `update admin_user set nickname=?,avatar_url=?,update_at=? where uuid=?`
-	QUERY_UPDATE_INFO_BY_USERNAME = `update admin_user set nickname=?,avatar_url=?,update_at=? where username=?`
-	QUERY_UPDATE_INFO_BY_EMAIL    = `update admin_user set nickname=?,avatar_url=?,update_at=? where email=?`
-	QUERY_UPDATE_INFO_BY_MOBILE   = `update admin_user set nickname=?,avatar_url=?,update_at=? where mobile=?`
+	QUERY_UPDATE_INFO_BY_UUID = `update admin_user set nickname=?,avatar_url=?,update_at=? where uuid=?`
+	QUERY_UPDATE_PWD_BY_UUID  = `update admin_user set password_hash=?,update_at=? where uuid=?`
 )
 
 func NewAdminUserModel() model.AdminUserModel {
@@ -148,6 +145,10 @@ func (this *adminUser) updateUser(ctx context.Context, query string, args ...int
 	return nil
 }
 
-func (this *adminUser) UpdateUserInfoByID(ctx context.Context, user entity.AdminUser) error {
-	return this.updateUser(ctx, user.Nickname, user.AvatarUrl, time.Now().Unix(), user.ID)
+func (this *adminUser) UpdateUserInfoByUUID(ctx context.Context, user *entity.AdminUser) error {
+	return this.updateUser(ctx, QUERY_UPDATE_INFO_BY_UUID, user.Nickname, user.AvatarUrl, time.Now().Unix(), user.UUID)
+}
+
+func (a *adminUser) UpdateUserPwdByUUID(ctx context.Context, user *entity.AdminUser) error {
+	return a.updateUser(ctx, QUERY_UPDATE_PWD_BY_UUID, user.PasswordHash, time.Now().Unix(), user.UUID)
 }

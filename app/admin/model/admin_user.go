@@ -10,5 +10,7 @@ type AdminUserModel interface {
 	FindUserByUsername(context.Context, string) (*entity.AdminUser, error)
 	FindUserByEmail(context.Context, string) (*entity.AdminUser, error)
 	FindUserByMobile(context.Context, string) (*entity.AdminUser, error)
-	InsertUser(ctx context.Context, user *entity.AdminUser) error
+	InsertUser(context.Context, *entity.AdminUser) error
+	UpdateUserInfoByUUID(context.Context, *entity.AdminUser) error
+	UpdateUserPwdByUUID(context.Context, *entity.AdminUser) error
 }
