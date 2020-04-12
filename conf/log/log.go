@@ -1,3 +1,4 @@
+// 全局log包转义
 package log
 
 import "github.com/sirupsen/logrus"

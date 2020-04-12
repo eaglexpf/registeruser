@@ -12,6 +12,32 @@ func adminUserList(c *gin.Context) {
 	c.JSON(200, response.Success(nil))
 }
 
+/**
+ * @apiDefine AdminUser 1.后台用户
+ */
+
+/**
+ * @api {post} /admin/user/register 1.注册后台用户api
+ * @apiDescription 新建一个新的后台用户
+ * @apiGroup AdminUser
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {string} token jwt验证token
+ *
+ * @apiParam {string} username 账号
+ * @apiParam {string} password 密码
+ * @apiParam {string} repeat_pwd 再输入一次密码
+ * @apiParam {string} email 邮箱
+ * @apiParam {string} nickname 昵称
+ * @apiParam {string} avatar_url 头像
+ *
+ * @apiSuccess {int} code 状态值
+ * @apiSuccess {string} msg 状态描述
+ * @apiSuccess {object} data 返回数据
+ *
+ **/
+
+// 注册后台用户api
 func adminUserRegister(c *gin.Context) {
 	adminUser := new(request.RequestRegisterAdminUser)
 	if err := c.ShouldBind(adminUser); err != nil {
@@ -27,6 +53,22 @@ func adminUserRegister(c *gin.Context) {
 	c.JSON(200, response.Success(nil))
 }
 
+/**
+ * @api {post} /admin/user/login 2.后台用户登录
+ * @apiDescription 后台用户登录
+ * @apiGroup AdminUser
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {string} username 账号
+ * @apiParam {string} password 密码
+ *
+ * @apiSuccess {int} code 状态值
+ * @apiSuccess {string} msg 状态描述
+ * @apiSuccess {object} data 返回数据
+ *
+ **/
+
+// 后台用户登录api
 func adminUserLogin(c *gin.Context) {
 	adminUser := new(request.RequestAdminUserLogin)
 	if err := c.ShouldBind(adminUser); err != nil {
@@ -39,6 +81,21 @@ func adminUserLogin(c *gin.Context) {
 	c.JSON(http.StatusOK, response.Success(token))
 }
 
+/**
+ * @api {get} /admin/user/refresh 3.后台用户刷新token
+ * @apiDescription 后台用户刷新token
+ * @apiGroup AdminUser
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {string} token jwt验证token
+ *
+ * @apiSuccess {int} code 状态值
+ * @apiSuccess {string} msg 状态描述
+ * @apiSuccess {object} data 返回数据
+ *
+ **/
+
+// 后台用户刷新token
 func adminUserRefreshToken(c *gin.Context) {
 	user, ok := c.Get("adminUser")
 	if !ok {
@@ -58,6 +115,23 @@ func adminUserRefreshToken(c *gin.Context) {
 	c.JSON(http.StatusOK, response.Success(token))
 }
 
+/**
+ * @api {post} /admin/user/update-info 4.修改后台用户基本信息
+ * @apiDescription 修改后台用户昵称，头像等基本信息
+ * @apiGroup AdminUser
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {string} token jwt验证token
+ * @apiParam {string} nickname 昵称
+ * @apiParam {string} avatar_url 头像
+ *
+ * @apiSuccess {int} code 状态值
+ * @apiSuccess {string} msg 状态描述
+ * @apiSuccess {object} data 返回数据
+ *
+ **/
+
+// 修改后台用户基本信息
 func adminUserUpdateInfo(c *gin.Context) {
 	user, ok := c.Get("adminUser")
 	if !ok {
@@ -88,6 +162,23 @@ func adminUserUpdateInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, response.Success(adminUser))
 }
 
+/**
+ * @api {post} /admin/user/update-pwd 5.修改后台用户密码
+ * @apiDescription 修改后台用户密码
+ * @apiGroup AdminUser
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {string} token jwt验证token
+ * @apiParam {string} password 新密码
+ * @apiParam {string} old_pwd 旧密码
+ *
+ * @apiSuccess {int} code 状态值
+ * @apiSuccess {string} msg 状态描述
+ * @apiSuccess {object} data 返回数据
+ *
+ **/
+
+// 修改后台用户密码
 func adminUserUpdatePwd(c *gin.Context) {
 	user, ok := c.Get("adminUser")
 	if !ok {

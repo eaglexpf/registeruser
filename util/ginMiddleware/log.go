@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// gin的log中间件
 func LoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//开始时间

@@ -8,6 +8,7 @@ import (
 	"registeruser/conf/log"
 )
 
+// 加载log配置
 func initLog() {
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{})
@@ -18,6 +19,7 @@ func initLog() {
 	}
 }
 
+// log写入文件
 func writeFile() {
 	log.Log.Logger.SetOutput(&lumberjack.Logger{
 		Filename:   global.CONFIG.Log.File.Path,

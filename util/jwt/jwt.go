@@ -1,4 +1,5 @@
-package util
+// jwt工具包
+package jwt
 
 import (
 	"errors"
@@ -14,6 +15,7 @@ var (
 	TokenInvalid     error = errors.New("Couldn't handle this token:")
 )
 
+// 生成新的jwt类
 func NewJWT() *appJWT {
 	return &appJWT{
 		signKey: []byte(global.CONFIG.Jwt.Sign),
@@ -24,6 +26,7 @@ type appJWT struct {
 	signKey []byte
 }
 
+// 生成一个jwt token
 func (j *appJWT) CreateToken(claims *global.JwtClaims) (string, error) {
 	claims.StandardClaims.ExpiresAt = time.Now().Add(time.Duration(global.CONFIG.Jwt.Express) * time.Second).Unix()
 	claims.StandardClaims.NotBefore = time.Now().Unix()
@@ -32,6 +35,7 @@ func (j *appJWT) CreateToken(claims *global.JwtClaims) (string, error) {
 	return token.SignedString(j.signKey)
 }
 
+// 解析jwt token
 func (j *appJWT) ParseToken(token string) (*global.JwtClaims, error) {
 	tokenClaims, err := jwt.ParseWithClaims(token, &global.JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return j.signKey, nil
@@ -59,6 +63,7 @@ func (j *appJWT) ParseToken(token string) (*global.JwtClaims, error) {
 	return nil, TokenInvalid
 }
 
+// 刷新重新生成一个jwt token
 func (j *appJWT) RefreshToken(token string) (string, error) {
 	tokenCliams, err := j.ParseToken(token)
 	if err != nil {

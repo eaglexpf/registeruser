@@ -7,6 +7,7 @@ import (
 	"registeruser/entity/response"
 )
 
+// gin处理panic中间件
 func RecoverMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {

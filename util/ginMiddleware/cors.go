@@ -1,3 +1,4 @@
+// gin 中间件
 package ginMiddleware
 
 import (
@@ -5,6 +6,7 @@ import (
 	"net/http"
 )
 
+// gin跨域中间件
 func CorsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method

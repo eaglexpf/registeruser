@@ -1,5 +1,7 @@
+// 项目数据定义
 package entity
 
+// adminUser后台用户类型
 type AdminUser struct {
 	ID                 int64  `json:"-" sql:"id"`
 	UUID               string `json:"uuid" sql:"uuid"`

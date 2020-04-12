@@ -8,6 +8,7 @@ import (
 	"registeruser/conf/log"
 )
 
+// 初始化mysql链接
 func initMysql() {
 	config := global.CONFIG.Mysql
 	if db, err := sql.Open(`mysql`, fmt.Sprintf("%s:%s@tcp(%s)/%s?%s",
@@ -29,6 +30,7 @@ func initMysql() {
 	}
 }
 
+// 清理mysql链接
 func closeMysql() {
 	if global.DB == nil {
 		return

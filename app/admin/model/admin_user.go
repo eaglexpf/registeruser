@@ -1,3 +1,4 @@
+// model 包
 package model
 
 import (
@@ -5,6 +6,7 @@ import (
 	"registeruser/app/admin/entity"
 )
 
+// 后台用户接口
 type AdminUserModel interface {
 	FindUserByUUID(context.Context, string) (*entity.AdminUser, error)
 	FindUserByUsername(context.Context, string) (*entity.AdminUser, error)

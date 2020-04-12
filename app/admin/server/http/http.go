@@ -1,3 +1,4 @@
+// 子项目的http服务包
 package http
 
 import (
@@ -12,6 +13,7 @@ func init() {
 	srv = service.NewService()
 }
 
+// 注册gin路由
 func Register(r *gin.Engine) *gin.Engine {
 	router := r.Group("/admin/")
 	user := router.Group("user/")

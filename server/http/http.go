@@ -1,3 +1,4 @@
+// http服务包
 package http
 
 import (
@@ -17,31 +18,11 @@ func router(r *gin.Engine) *gin.Engine {
 	r.Use(ginMiddleware.LoggerMiddleware())
 	r.Use(ginMiddleware.CorsMiddleware())
 	r.Use(ginMiddleware.RecoverMiddleware())
-	//r.Use(ginMiddleware.JWTMiddleware())
-	//r.GET("/", func(c *gin.Context) {
-	//	//jwt := NewJWT()
-	//	token, err := util.NewJWT().CreateToken(&global.JwtClaims{})
-	//	c.JSON(200, gin.H{
-	//		"code": 0,
-	//		"msg":  token,
-	//		"err":  err,
-	//	})
-	//})
-	//r.GET("/index", func(c *gin.Context) {
-	//	//jwt := NewJWT()
-	//	sign := c.DefaultQuery("sign", "asdsadasdad")
-	//	token, err := util.NewJWT().ParseToken(sign)
-	//	c.JSON(200, gin.H{
-	//		"code": 0,
-	//		"msg":  token,
-	//		"err":  err,
-	//		"sign": sign,
-	//	})
-	//})
 	http_admin.Register(r)
 	return r
 }
 
+// 运行http服务
 func Run() {
 	gin.DefaultWriter = io.MultiWriter(log.Log.Logger.Writer(), os.Stdout)
 	//gin.DefaultWriter = log.Log.Logger.Writer()

@@ -6,6 +6,7 @@ import (
 	"registeruser/conf/log"
 )
 
+// 初始化redis链接
 func initRedis() {
 	config := global.CONFIG.Redis
 	client := redis.NewClient(&redis.Options{
@@ -22,6 +23,7 @@ func initRedis() {
 	}
 }
 
+// 清理redis链接
 func closeRedis() {
 	if global.REDIS == nil {
 		return

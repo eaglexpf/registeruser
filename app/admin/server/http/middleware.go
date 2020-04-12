@@ -7,6 +7,7 @@ import (
 	"registeruser/entity/response"
 )
 
+// 验证后台用户jwt的gin中间件
 func middlewareAdminUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		claims, ok := c.Get("claims")

@@ -1,3 +1,4 @@
+// sql工具
 package sqlUtil
 
 import (
