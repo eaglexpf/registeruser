@@ -10,14 +10,14 @@ import (
 	http_admin "registeruser/app/admin/server/http"
 	"registeruser/conf/global"
 	"registeruser/conf/log"
-	"registeruser/util/ginMiddleware"
+	"registeruser/util/gin_middleware"
 	"time"
 )
 
 func router(r *gin.Engine) *gin.Engine {
-	r.Use(ginMiddleware.LoggerMiddleware())
-	r.Use(ginMiddleware.CorsMiddleware())
-	r.Use(ginMiddleware.RecoverMiddleware())
+	r.Use(gin_middleware.LoggerMiddleware())
+	r.Use(gin_middleware.CorsMiddleware())
+	r.Use(gin_middleware.RecoverMiddleware())
 	http_admin.Register(r)
 	return r
 }

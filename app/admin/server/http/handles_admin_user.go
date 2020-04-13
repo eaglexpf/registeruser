@@ -13,13 +13,13 @@ func adminUserList(c *gin.Context) {
 }
 
 /**
- * @apiDefine AdminUser 1.后台用户
+ * @apiDefine api_group_101 1.后台用户
  */
 
 /**
  * @api {post} /admin/user/register 1.注册后台用户api
  * @apiDescription 新建一个新的后台用户
- * @apiGroup AdminUser
+ * @apiGroup api_group_101
  * @apiVersion 1.0.0
  *
  * @apiHeader {string} token jwt验证token
@@ -44,7 +44,7 @@ func adminUserRegister(c *gin.Context) {
 		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
 		return
 	}
-	_, err := srv.AdminUserRegister(c, adminUser)
+	_, err := srv.RegisterAdminUser(c, adminUser)
 	if err != nil {
 		c.JSON(http.StatusOK, response.Error(400, err.Error()))
 		return
@@ -56,7 +56,7 @@ func adminUserRegister(c *gin.Context) {
 /**
  * @api {post} /admin/user/login 2.后台用户登录
  * @apiDescription 后台用户登录
- * @apiGroup AdminUser
+ * @apiGroup api_group_101
  * @apiVersion 1.0.0
  *
  * @apiParam {string} username 账号
@@ -74,7 +74,7 @@ func adminUserLogin(c *gin.Context) {
 	if err := c.ShouldBind(adminUser); err != nil {
 		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
 	}
-	token, err := srv.AdminUserLogin(c, adminUser)
+	token, err := srv.LoginForAdminUser(c, adminUser)
 	if err != nil {
 		c.JSON(http.StatusOK, response.ErrorRegisterAdminUser())
 	}
@@ -84,7 +84,7 @@ func adminUserLogin(c *gin.Context) {
 /**
  * @api {get} /admin/user/refresh 3.后台用户刷新token
  * @apiDescription 后台用户刷新token
- * @apiGroup AdminUser
+ * @apiGroup api_group_101
  * @apiVersion 1.0.0
  *
  * @apiHeader {string} token jwt验证token
@@ -108,7 +108,7 @@ func adminUserRefreshToken(c *gin.Context) {
 		return
 	}
 
-	token, err := srv.AdminUserRefreshToken(c, adminUser)
+	token, err := srv.RefreshTokenByAdminUser(c, adminUser)
 	if err != nil {
 		c.JSON(http.StatusOK, response.ErrorRegisterAdminUser())
 	}
@@ -118,7 +118,7 @@ func adminUserRefreshToken(c *gin.Context) {
 /**
  * @api {post} /admin/user/update-info 4.修改后台用户基本信息
  * @apiDescription 修改后台用户昵称，头像等基本信息
- * @apiGroup AdminUser
+ * @apiGroup api_group_101
  * @apiVersion 1.0.0
  *
  * @apiHeader {string} token jwt验证token
@@ -153,7 +153,7 @@ func adminUserUpdateInfo(c *gin.Context) {
 		updateData.UUID = adminUser.UUID
 	}
 
-	adminUser, err := srv.AdminUserUpdateInfo(c, &updateData)
+	adminUser, err := srv.UpdateAdminUserInfo(c, &updateData)
 	if err != nil {
 		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
 		return
@@ -165,7 +165,7 @@ func adminUserUpdateInfo(c *gin.Context) {
 /**
  * @api {post} /admin/user/update-pwd 5.修改后台用户密码
  * @apiDescription 修改后台用户密码
- * @apiGroup AdminUser
+ * @apiGroup api_group_101
  * @apiVersion 1.0.0
  *
  * @apiHeader {string} token jwt验证token
@@ -199,7 +199,7 @@ func adminUserUpdatePwd(c *gin.Context) {
 		updateData.UUID = adminUser.UUID
 	}
 
-	adminUser, err := srv.AdminUserResetPwd(c, &updateData)
+	adminUser, err := srv.ResetPwdForAdminUser(c, &updateData)
 	if err != nil {
 		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
 		return

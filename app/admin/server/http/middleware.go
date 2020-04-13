@@ -22,7 +22,7 @@ func middlewareAdminUser() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		adminUser, err := srv.AdminUserFindByUUID(c, uuid.UUID)
+		adminUser, err := srv.FindAdminUserByUUID(c, uuid.UUID)
 		if err != nil {
 			c.JSON(http.StatusForbidden, response.ErrorForBidden())
 			c.Abort()

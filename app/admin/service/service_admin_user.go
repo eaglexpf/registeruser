@@ -19,18 +19,18 @@ const (
 )
 
 // 新建一个后台用户服务
-func (s *Service) AdminUserRegister(ctx context.Context, request *request.RequestRegisterAdminUser) (adminUser *dao.AdminUser, err error) {
+func (s *Service) RegisterAdminUser(ctx context.Context, request *request.RequestRegisterAdminUser) (adminUser *dao.AdminUser, err error) {
 	adminUser = new(dao.AdminUser)
 	if request.Password != request.RepeatPwd {
 		err = errors.New("两次密码不一致")
 		return
 	}
-	_, err = s.AdminUserFindByUsername(ctx, request.Username)
+	_, err = s.FindAdminUserByUUID(ctx, request.Username)
 	if err == nil {
 		err = errors.New("账号已存在")
 		return
 	}
-	_, err = s.AdminUserFindByEmail(ctx, request.Email)
+	_, err = s.FindAdminUserByEmail(ctx, request.Email)
 	if err == nil {
 		err = errors.New("邮箱已存在")
 		return
@@ -38,7 +38,7 @@ func (s *Service) AdminUserRegister(ctx context.Context, request *request.Reques
 	// 获取唯一uuid
 	for {
 		adminUser.UUID = fmt.Sprintf("%s", uuid.NewV4())
-		_, err := s.AdminUserFindByUUID(ctx, adminUser.UUID)
+		_, err := s.FindAdminUserByUUID(ctx, adminUser.UUID)
 		if err != nil {
 			break
 		}
@@ -68,8 +68,8 @@ func (s *Service) AdminUserRegister(ctx context.Context, request *request.Reques
 }
 
 // 后台用户登录服务
-func (s *Service) AdminUserLogin(ctx context.Context, request *request.RequestAdminUserLogin) (token string, err error) {
-	adminUser, err := s.AdminUserFindByUsername(ctx, request.Username)
+func (s *Service) LoginForAdminUser(ctx context.Context, request *request.RequestAdminUserLogin) (token string, err error) {
+	adminUser, err := s.FindAdminUserByUsername(ctx, request.Username)
 	if err != nil {
 		return
 	}
@@ -86,7 +86,7 @@ func (s *Service) AdminUserLogin(ctx context.Context, request *request.RequestAd
 	return
 }
 
-func (s *Service) AdminUserRefreshToken(ctx context.Context, adminUser *dao.AdminUser) (token string, err error) {
+func (s *Service) RefreshTokenByAdminUser(ctx context.Context, adminUser *dao.AdminUser) (token string, err error) {
 	token, err = jwt.NewJWT().CreateToken(&global.JwtClaims{
 		UUID: adminUser.UUID,
 	})
@@ -94,7 +94,7 @@ func (s *Service) AdminUserRefreshToken(ctx context.Context, adminUser *dao.Admi
 }
 
 // 修改后台用户的昵称和头像
-func (s *Service) AdminUserUpdateInfo(ctx context.Context, updateData *request.RequestAdminUserUpdateInfo) (adminUser *dao.AdminUser, err error) {
+func (s *Service) UpdateAdminUserInfo(ctx context.Context, updateData *request.RequestAdminUserUpdateInfo) (adminUser *dao.AdminUser, err error) {
 	adminUser = &dao.AdminUser{
 		UUID:      updateData.UUID,
 		Nickname:  updateData.Nickname,
@@ -105,7 +105,7 @@ func (s *Service) AdminUserUpdateInfo(ctx context.Context, updateData *request.R
 }
 
 // 修改后台用户的密码
-func (s *Service) AdminUserResetPwd(ctx context.Context, updateData *request.RequestAdminUserResetPwd) (adminUser *dao.AdminUser, err error) {
+func (s *Service) ResetPwdForAdminUser(ctx context.Context, updateData *request.RequestAdminUserResetPwd) (adminUser *dao.AdminUser, err error) {
 	if updateData.Password != updateData.OldPwd {
 		err = errors.New("两次密码不一致")
 		return
@@ -124,16 +124,16 @@ func (s *Service) AdminUserResetPwd(ctx context.Context, updateData *request.Req
 }
 
 // 根据uuid查询后台用户
-func (s *Service) AdminUserFindByUUID(ctx context.Context, uuid string) (*dao.AdminUser, error) {
+func (s *Service) FindAdminUserByUUID(ctx context.Context, uuid string) (*dao.AdminUser, error) {
 	return s.adminUserModel.FindUserByUUID(ctx, uuid)
 }
 
 // 根据username查询后台用户
-func (s *Service) AdminUserFindByUsername(ctx context.Context, username string) (*dao.AdminUser, error) {
+func (s *Service) FindAdminUserByUsername(ctx context.Context, username string) (*dao.AdminUser, error) {
 	return s.adminUserModel.FindUserByUsername(ctx, username)
 }
 
 // 根据Email查询后台用户
-func (s *Service) AdminUserFindByEmail(ctx context.Context, email string) (*dao.AdminUser, error) {
+func (s *Service) FindAdminUserByEmail(ctx context.Context, email string) (*dao.AdminUser, error) {
 	return s.adminUserModel.FindUserByEmail(ctx, email)
 }

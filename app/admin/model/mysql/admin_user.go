@@ -8,7 +8,7 @@ import (
 	"registeruser/app/admin/model"
 	"registeruser/conf/global"
 	"registeruser/conf/log"
-	"registeruser/util/sqlUtil"
+	"registeruser/util/sql_util"
 	"time"
 )
 
@@ -56,7 +56,7 @@ func (this *adminUser) fetch(ctx context.Context, query string, args ...interfac
 	for rows.Next() {
 		row := new(dao.AdminUser)
 
-		addrs, err := sqlUtil.AddrsEncode(row, columns)
+		addrs, err := sql_util.AddrsEncode(row, columns)
 		if err != nil {
 			return nil, err
 		}

@@ -4,7 +4,7 @@ package http
 import (
 	"github.com/gin-gonic/gin"
 	"registeruser/app/admin/service"
-	"registeruser/util/ginMiddleware"
+	"registeruser/util/gin_middleware"
 )
 
 var srv *service.Service
@@ -19,11 +19,20 @@ func Register(r *gin.Engine) *gin.Engine {
 	user := router.Group("user/")
 	user.POST("register", adminUserRegister)
 	user.POST("login", adminUserLogin)
-	user.Use(ginMiddleware.JWTMiddleware()).Use(middlewareAdminUser())
+	user.Use(gin_middleware.JWTMiddleware()).Use(middlewareAdminUser())
 	{
 		user.GET("refresh", adminUserRefreshToken)
 		user.POST("update-info", adminUserUpdateInfo)
 		user.POST("update-pwd", adminUserUpdatePwd)
+	}
+	role := router.Group("role")
+	role.Use(gin_middleware.JWTMiddleware()).Use(middlewareAdminUser())
+	{
+		role.GET("/", findAdminRoleList)
+		role.POST("/", registerAdminRole)
+		role.GET("/:id", findAdminRoleInfo)
+		role.PUT("/:id", updateAdminRole)
+		role.DELETE("/:id", deleteAdminRole)
 	}
 	return r
 }

@@ -10,10 +10,12 @@ import (
 func NewService() *Service {
 	return &Service{
 		adminUserModel: mysql.NewAdminUserModel(),
+		adminRoleModel: mysql.NewAdminRoleModel(),
 	}
 }
 
 // service服务类型
 type Service struct {
 	adminUserModel model.AdminUserModel
+	adminRoleModel model.AdminRoleModel
 }

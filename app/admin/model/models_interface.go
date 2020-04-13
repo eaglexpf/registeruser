@@ -16,3 +16,11 @@ type AdminUserModel interface {
 	UpdateUserInfoByUUID(context.Context, *dao.AdminUser) error
 	UpdateUserPwdByUUID(context.Context, *dao.AdminUser) error
 }
+
+type AdminRoleModel interface {
+	FindRoleList(ctx context.Context, offset, limit int64) ([]*dao.AdminRole, error)
+	FindRoleByID(context.Context, int64) (*dao.AdminRole, error)
+	InsertRole(context.Context, *dao.AdminRole) error
+	UpdateRoleByID(context.Context, *dao.AdminRole) error
+	DeleteRoleByID(context.Context, int64) error
+}
