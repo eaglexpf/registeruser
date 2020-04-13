@@ -75,6 +75,7 @@ func (s *Service) LoginForAdminUser(ctx context.Context, request *request.Reques
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(adminUser.PasswordHash), []byte(request.Password))
 	if err != nil {
+		err = errors.New("密码错误")
 		return
 	}
 	token, err = jwt.NewJWT().CreateToken(&global.JwtClaims{

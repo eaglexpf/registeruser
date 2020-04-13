@@ -12,6 +12,15 @@ import (
  * @apiDefine api_group_102 2.后台角色
  */
 
+func registerRoleGroup(router *gin.RouterGroup) {
+	role := router.Group("role")
+	role.GET("/", roleFindAll)
+	role.POST("/", roleRegister)
+	role.GET("/:id", roleFindByID)
+	role.PUT("/:id", roleUpdateByID)
+	role.DELETE("/:id", roleDeleteByID)
+}
+
 /**
  * @api {get} /admin/role/ 1.角色列表
  * @apiDescription 获取后台角色列表api
@@ -28,7 +37,7 @@ import (
  *
  **/
 // 查询角色列表api
-func findAdminRoleList(c *gin.Context) {
+func roleFindAll(c *gin.Context) {
 	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
@@ -41,7 +50,8 @@ func findAdminRoleList(c *gin.Context) {
 	}
 	list, err := srv.FindRoleList(c, page, page_size)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidate())
+		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
+		return
 	}
 	c.JSON(http.StatusOK, response.Success(list))
 	return
@@ -62,7 +72,7 @@ func findAdminRoleList(c *gin.Context) {
  *
  **/
 // 查询角色信息api
-func findAdminRoleInfo(c *gin.Context) {
+func roleFindByID(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
@@ -93,7 +103,7 @@ func findAdminRoleInfo(c *gin.Context) {
  *
  **/
 // 注册一个新角色
-func registerAdminRole(c *gin.Context) {
+func roleRegister(c *gin.Context) {
 	request_admin_role := new(request.RequestAdminRoleRegister)
 	if err := c.ShouldBind(request_admin_role); err != nil {
 		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
@@ -124,7 +134,7 @@ func registerAdminRole(c *gin.Context) {
  *
  **/
 // 修改一个角色
-func updateAdminRole(c *gin.Context) {
+func roleUpdateByID(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		return
@@ -158,7 +168,7 @@ func updateAdminRole(c *gin.Context) {
  *
  **/
 // 删除一个角色
-func deleteAdminRole(c *gin.Context) {
+func roleDeleteByID(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		return

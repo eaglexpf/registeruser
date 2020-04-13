@@ -7,7 +7,7 @@ import (
 )
 
 // 查询角色列表
-func (s *Service) FindRoleList(ctx context.Context, page, page_size int64) (data []*dao.AdminRole, err error) {
+func (s *Service) FindRoleList(ctx context.Context, page, page_size int64) (data []dao.AdminRole, err error) {
 	offset := (page - 1) * page_size
 	data, err = s.adminRoleModel.FindRoleList(ctx, offset, page_size)
 	return

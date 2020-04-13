@@ -21,10 +21,13 @@ const (
 )
 
 func NewAdminRoleModel() model.AdminRoleModel {
-	return &role{}
+	return &role{
+		sqlUtil: sql_util.NewSqlUtil(global.DB),
+	}
 }
 
 type role struct {
+	sqlUtil *sql_util.SqlUtil
 }
 
 func (r *role) fetch(ctx context.Context, query string, args ...interface{}) ([]*dao.AdminRole, error) {
@@ -118,8 +121,14 @@ func (r *role) delete(ctx context.Context, query string, args ...interface{}) er
 	return nil
 }
 
-func (r *role) FindRoleList(ctx context.Context, offset, limit int64) ([]*dao.AdminRole, error) {
-	return r.fetch(ctx, QUERY_FIND_ROLE_LIST, offset, limit)
+func (r *role) FindRoleList(ctx context.Context, offset, limit int64) (data []dao.AdminRole, err error) {
+	//data := make([]dao.AdminRole, 0)
+	//var data []dao.AdminRole
+	//data := new(dao.AdminRole)
+	err = r.sqlUtil.Fetch(ctx, QUERY_FIND_ROLE_LIST, &data, offset, limit)
+	return
+	//return data, err
+	//return r.fetch(ctx, QUERY_FIND_ROLE_LIST, offset, limit)
 }
 
 func (r *role) FindRoleByID(ctx context.Context, id int64) (adminRole *dao.AdminRole, err error) {

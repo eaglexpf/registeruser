@@ -18,9 +18,18 @@ type AdminUserModel interface {
 }
 
 type AdminRoleModel interface {
-	FindRoleList(ctx context.Context, offset, limit int64) ([]*dao.AdminRole, error)
+	FindRoleList(ctx context.Context, offset, limit int64) ([]dao.AdminRole, error)
 	FindRoleByID(context.Context, int64) (*dao.AdminRole, error)
 	InsertRole(context.Context, *dao.AdminRole) error
 	UpdateRoleByID(context.Context, *dao.AdminRole) error
 	DeleteRoleByID(context.Context, int64) error
+}
+
+type AdminApiModel interface {
+	FindAll(ctx context.Context, offset, limit int64) ([]dao.AdminApi, error)
+	FindByID(context.Context, int64) (*dao.AdminApi, error)
+	Search(ctx context.Context, method, path string, offset, limit int64) ([]dao.AdminApi, error)
+	Register(context.Context, *dao.AdminApi) error
+	UpdateByID(context.Context, *dao.AdminApi) error
+	DeleteByID(context.Context, int64) error
 }

@@ -14,7 +14,7 @@ func init() {
 }
 
 // 注册gin路由
-func Register(r *gin.Engine) *gin.Engine {
+func Register(r *gin.Engine) {
 	router := r.Group("/admin/")
 	user := router.Group("user/")
 	user.POST("register", adminUserRegister)
@@ -24,15 +24,8 @@ func Register(r *gin.Engine) *gin.Engine {
 		user.GET("refresh", adminUserRefreshToken)
 		user.POST("update-info", adminUserUpdateInfo)
 		user.POST("update-pwd", adminUserUpdatePwd)
+
+		registerRoleGroup(router)
+		registerApiGroup(router)
 	}
-	role := router.Group("role")
-	role.Use(gin_middleware.JWTMiddleware()).Use(middlewareAdminUser())
-	{
-		role.GET("/", findAdminRoleList)
-		role.POST("/", registerAdminRole)
-		role.GET("/:id", findAdminRoleInfo)
-		role.PUT("/:id", updateAdminRole)
-		role.DELETE("/:id", deleteAdminRole)
-	}
-	return r
 }

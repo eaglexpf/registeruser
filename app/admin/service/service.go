@@ -11,6 +11,7 @@ func NewService() *Service {
 	return &Service{
 		adminUserModel: mysql.NewAdminUserModel(),
 		adminRoleModel: mysql.NewAdminRoleModel(),
+		adminApiModel:  mysql.NewAdminApiModel(),
 	}
 }
 
@@ -18,4 +19,5 @@ func NewService() *Service {
 type Service struct {
 	adminUserModel model.AdminUserModel
 	adminRoleModel model.AdminRoleModel
+	adminApiModel  model.AdminApiModel
 }

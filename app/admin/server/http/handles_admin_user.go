@@ -51,6 +51,7 @@ func adminUserRegister(c *gin.Context) {
 	}
 
 	c.JSON(200, response.Success(nil))
+	return
 }
 
 /**
@@ -73,12 +74,15 @@ func adminUserLogin(c *gin.Context) {
 	adminUser := new(request.RequestAdminUserLogin)
 	if err := c.ShouldBind(adminUser); err != nil {
 		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
+		return
 	}
 	token, err := srv.LoginForAdminUser(c, adminUser)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorRegisterAdminUser())
+		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
+		return
 	}
 	c.JSON(http.StatusOK, response.Success(token))
+	return
 }
 
 /**
@@ -111,8 +115,10 @@ func adminUserRefreshToken(c *gin.Context) {
 	token, err := srv.RefreshTokenByAdminUser(c, adminUser)
 	if err != nil {
 		c.JSON(http.StatusOK, response.ErrorRegisterAdminUser())
+		return
 	}
 	c.JSON(http.StatusOK, response.Success(token))
+	return
 }
 
 /**
@@ -160,6 +166,7 @@ func adminUserUpdateInfo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.Success(adminUser))
+	return
 }
 
 /**
@@ -206,6 +213,7 @@ func adminUserUpdatePwd(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.Success(adminUser))
+	return
 }
 
 func adminUserResetEmail(c *gin.Context) {
