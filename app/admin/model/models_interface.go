@@ -33,3 +33,10 @@ type AdminApiModel interface {
 	UpdateByID(context.Context, *dao.AdminApi) error
 	DeleteByID(context.Context, int64) error
 }
+
+type AdminPermissionModel interface {
+	Search(ctx context.Context, search *dao.AdminPermission, offset, limit int64) (result []dao.AdminPermission, err error)
+	SearchCount(ctx context.Context, search *dao.AdminPermission) int64
+	Register(ctx context.Context, permission *dao.AdminPermission) error
+	DeleteInfo(ctx context.Context, permission *dao.AdminPermission) error
+}

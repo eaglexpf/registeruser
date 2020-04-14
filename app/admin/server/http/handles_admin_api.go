@@ -9,11 +9,11 @@ import (
 )
 
 /**
- * @apiDefine api_group_103 2.API管理
+ * @apiDefine api_group_103 3.API管理
  */
 
 func registerApiGroup(router *gin.RouterGroup) {
-	api := router.Group("api")
+	api := router.Group("/api")
 	api.GET("/", apiFindAll)
 	api.POST("/", apiRegister)
 	api.GET("/id/:id", apiFindByID)

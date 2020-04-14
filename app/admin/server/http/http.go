@@ -7,6 +7,7 @@ import (
 	"registeruser/util/gin_middleware"
 )
 
+//var srv service.ServiceInter
 var srv *service.Service
 
 func init() {
@@ -15,17 +16,21 @@ func init() {
 
 // 注册gin路由
 func Register(r *gin.Engine) {
-	router := r.Group("/admin/")
-	user := router.Group("user/")
-	user.POST("register", adminUserRegister)
-	user.POST("login", adminUserLogin)
+	router := r.Group("/admin")
+	user := router.Group("/user")
+	user.POST("/login", adminUserLogin)
 	user.Use(gin_middleware.JWTMiddleware()).Use(middlewareAdminUser())
 	{
-		user.GET("refresh", adminUserRefreshToken)
-		user.POST("update-info", adminUserUpdateInfo)
-		user.POST("update-pwd", adminUserUpdatePwd)
+		user.POST("/register", adminUserRegister)
+		user.GET("/refresh", adminUserRefreshToken)
+		user.POST("/update-info", adminUserUpdateInfo)
+		user.POST("/update-pwd", adminUserUpdatePwd)
+	}
+	router.Use(gin_middleware.JWTMiddleware()).Use(middlewareAdminUser())
+	{
 
 		registerRoleGroup(router)
 		registerApiGroup(router)
+		registerPermissionGroup(router)
 	}
 }

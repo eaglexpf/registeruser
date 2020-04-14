@@ -5,9 +5,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"reflect"
-	"registeruser/conf/global"
-	"registeruser/conf/log"
 	"strings"
 )
 
@@ -26,7 +25,7 @@ func (s *SqlUtil) FetchMap(ctx context.Context, query string, args ...interface{
 	}
 	defer func() {
 		if err := rows.Close(); err != nil {
-			log.Errorf("fetch close error: %v; query: $v; args: %v", err, query, args)
+			fmt.Printf("fetch close error: %v; query: $v; args: %v \n", err, query, args)
 		}
 	}()
 	columnsType, err := rows.ColumnTypes()
@@ -50,7 +49,7 @@ func (s *SqlUtil) FetchMap(ctx context.Context, query string, args ...interface{
 	result = make([]map[string]interface{}, 0)
 	for rows.Next() {
 		if err := rows.Scan(addrs...); err != nil {
-			log.Errorf("scan error:%v", err)
+			fmt.Printf("scan error:%v \n", err)
 			continue
 		}
 		var data map[string]interface{}
@@ -74,7 +73,7 @@ func (s *SqlUtil) FetchMapRow(ctx context.Context, query string, args ...interfa
 	}
 	defer func() {
 		if err := rows.Close(); err != nil {
-			log.Errorf("fetch close error: %v; query: $v; args: %v", err, query, args)
+			fmt.Printf("fetch close error: %v; query: $v; args: %v \n", err, query, args)
 		}
 	}()
 	columnsType, err := rows.ColumnTypes()
@@ -97,7 +96,7 @@ func (s *SqlUtil) FetchMapRow(ctx context.Context, query string, args ...interfa
 	}
 	for rows.Next() {
 		if err := rows.Scan(addrs...); err != nil {
-			log.Errorf("scan error:%v", err)
+			fmt.Printf("scan error:%v \n", err)
 			continue
 		}
 		d := &result
@@ -254,7 +253,7 @@ func (s *SqlUtil) Insert(ctx context.Context, query string, args ...interface{})
 }
 
 func (s *SqlUtil) Delete(ctx context.Context, query string, args ...interface{}) (affect int64, err error) {
-	stmt, err := global.DB.PrepareContext(ctx, query)
+	stmt, err := s.db.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}

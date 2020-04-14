@@ -13,7 +13,7 @@ import (
  */
 
 func registerRoleGroup(router *gin.RouterGroup) {
-	role := router.Group("role")
+	role := router.Group("/role")
 	role.GET("/", roleFindAll)
 	role.POST("/", roleRegister)
 	role.GET("/:id", roleFindByID)
