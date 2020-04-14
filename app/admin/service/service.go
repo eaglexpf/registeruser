@@ -2,6 +2,7 @@
 package service
 
 import (
+	"registeruser/app/admin/entity/response"
 	"registeruser/app/admin/model"
 	"registeruser/app/admin/model/mysql"
 )
@@ -20,4 +21,17 @@ type Service struct {
 	adminUserModel model.AdminUserModel
 	adminRoleModel model.AdminRoleModel
 	adminApiModel  model.AdminApiModel
+}
+
+func (s *Service) Page(count, page, page_size, page_count int64, list interface{}) *response.ResponsePage {
+	responseData := &response.ResponsePage{
+		Meta: &response.ResponsePageMeta{
+			Count:     count,
+			Page:      page,
+			PageSize:  page_size,
+			PageCount: page_count,
+		},
+		List: list,
+	}
+	return responseData
 }

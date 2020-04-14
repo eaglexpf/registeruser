@@ -10,6 +10,17 @@ type Response struct {
 	*app_response.Response
 }
 
+type ResponsePage struct {
+	Meta *ResponsePageMeta `json:"meta"`
+	List interface{}       `json:"list"`
+}
+type ResponsePageMeta struct {
+	Count     int64 `json:"count"`
+	Page      int64 `json:"page"`
+	PageSize  int64 `json:"page_size"`
+	PageCount int64 `json:"page_count"`
+}
+
 //type Response struct {
 //	Code int64       `json:"code"`
 //	Msg  string      `json:"msg"`

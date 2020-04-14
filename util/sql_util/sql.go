@@ -110,6 +110,9 @@ func (s *SqlUtil) FetchMapRow(ctx context.Context, query string, args ...interfa
 		v.Set(m)
 		break
 	}
+	if result == nil {
+		err = errors.New("未查询到数据")
+	}
 	return
 }
 
@@ -184,7 +187,7 @@ func (s *SqlUtil) FetchRow(ctx context.Context, query string, data interface{}, 
 		return
 	}
 
-	resultMap, err := s.FetchMap(ctx, query, args...)
+	resultMap, err := s.FetchMapRow(ctx, query, args...)
 	if err != nil {
 		return
 	}
@@ -195,7 +198,7 @@ func (s *SqlUtil) FetchRow(ctx context.Context, query string, data interface{}, 
 	data_type = data_type.Elem()   // Elem返回t持有的接口保管的值的Value封装
 	data_value = data_value.Elem() // Elem返回v持有的接口保管的值的Value封装
 	data_value_type := data_value.Type()
-	for _, map_value := range resultMap {
+	for col, map_value := range resultMap {
 		for i := 0; i < data_value_type.NumField(); i++ {
 			data_value_type_field := data_value_type.Field(i)
 			data_value_field := data_value.Field(i)
@@ -209,13 +212,13 @@ func (s *SqlUtil) FetchRow(ctx context.Context, query string, data interface{}, 
 			if key == "" {
 				continue
 			}
-			for col, mapValue := range map_value { // 如果字段tag在查询字段里面，加入值
-				if col == key {
-					data_value_field.Set(reflect.ValueOf(mapValue))
-				}
+			//for col, mapValue := range map_value { // 如果字段tag在查询字段里面，加入值
+			if col == key {
+				data_value_field.Set(reflect.ValueOf(map_value))
 			}
+			//}
 		}
-		break
+		//break
 	}
 	return
 }

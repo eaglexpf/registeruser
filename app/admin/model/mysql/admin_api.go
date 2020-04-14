@@ -11,14 +11,18 @@ import (
 )
 
 const (
-	QUERY_API_FIND_ALL               = `select * from admin_api limit ?,?`
-	QUERY_API_FIND_BY_ID             = `select * from admin_api where id=?`
-	QUERY_API_INSERT                 = `insert into admin_api ( method,path,description,create_at ) values ( ?, ?, ?, ? )`
-	QUERY_API_UPDATE_BY_ID           = `update admin_api set method=?,path=?,description=?,update_at=? where id=?`
-	QUERY_API_DELETE_BY_ID           = `delete from admin_api where id=?`
-	QUERY_API_SEARCH_METHOD          = `select * from admin_api where method=? limit ?,?`
-	QUERY_API_SEARCH_PATH            = `select * from admin_api where path like "%?%" limit ?,?`
-	QUERY_API_SEARCH_METHOD_AND_PATH = `select * from admin_api where method=? and path like "%?%" limit ?,?`
+	QUERY_API_FIND_ALL                     = `select * from admin_api limit ?,?`
+	QUERY_API_FIND_ALL_COUNT               = `select count(*) as count from admin_api`
+	QUERY_API_FIND_BY_ID                   = `select * from admin_api where id=?`
+	QUERY_API_INSERT                       = `insert into admin_api ( method,path,description,create_at ) values ( ?, ?, ?, ? )`
+	QUERY_API_UPDATE_BY_ID                 = `update admin_api set method=?,path=?,description=?,update_at=? where id=?`
+	QUERY_API_DELETE_BY_ID                 = `delete from admin_api where id=?`
+	QUERY_API_SEARCH_METHOD                = `select * from admin_api where method=? limit ?,?`
+	QUERY_API_SEARCH_PATH                  = `select * from admin_api where path like "%?%" limit ?,?`
+	QUERY_API_SEARCH_METHOD_AND_PATH       = `select * from admin_api where method=? and path like "%?%" limit ?,?`
+	QUERY_API_SEARCH_METHOD_COUNT          = `select count(*) as count from admin_api where method=? limit ?,?`
+	QUERY_API_SEARCH_PATH_COUNT            = `select count(*) as count from admin_api where path like "%?%" limit ?,?`
+	QUERY_API_SEARCH_METHOD_AND_PATH_COUNT = `select count(*) as count from admin_api where method=? and path like "%?%" limit ?,?`
 )
 
 // 初始化admin_api表的model服务
@@ -32,9 +36,26 @@ type api struct {
 	*sql_util.SqlUtil
 }
 
+func (a *api) count(ctx context.Context, query string, args ...interface{}) int64 {
+	result, err := a.FetchMapRow(ctx, query, args...)
+	if err != nil {
+		return 0
+	}
+	count, ok := result["count"]
+	if !ok {
+		return 0
+	}
+	count_int, ok := count.(int64)
+	if !ok {
+		return 0
+	}
+	return count_int
+}
+
 // 查询全部数据
-func (a *api) FindAll(ctx context.Context, offset, limit int64) (list []dao.AdminApi, err error) {
+func (a *api) FindAll(ctx context.Context, offset, limit int64) (list []dao.AdminApi, count int64, err error) {
 	err = a.Fetch(ctx, QUERY_API_FIND_ALL, &list, offset, limit)
+	count = a.count(ctx, QUERY_API_FIND_ALL_COUNT)
 	return
 }
 
@@ -47,16 +68,20 @@ func (a *api) FindByID(ctx context.Context, id int64) (*dao.AdminApi, error) {
 }
 
 // search搜索
-func (a *api) Search(ctx context.Context, method, path string, offset, limit int64) (list []dao.AdminApi, err error) {
+func (a *api) Search(ctx context.Context, method, path string, offset, limit int64) (list []dao.AdminApi, count int64, err error) {
 	switch true {
 	case method == "" && path != "":
 		err = a.Fetch(ctx, QUERY_API_SEARCH_PATH, &list, path, offset, limit)
+		count = a.count(ctx, QUERY_API_SEARCH_PATH_COUNT, path)
 	case method != "" && path == "":
 		err = a.Fetch(ctx, QUERY_API_SEARCH_METHOD, &list, method, offset, limit)
+		count = a.count(ctx, QUERY_API_SEARCH_METHOD_COUNT, method)
 	case method != "" && path != "":
 		err = a.Fetch(ctx, QUERY_API_SEARCH_METHOD_AND_PATH, &list, method, path, offset, limit)
+		count = a.count(ctx, QUERY_API_SEARCH_METHOD_AND_PATH_COUNT, method, path)
 	default:
 		err = a.Fetch(ctx, QUERY_API_FIND_ALL, &list, offset, limit)
+		count = a.count(ctx, QUERY_API_FIND_ALL_COUNT)
 	}
 	return
 }

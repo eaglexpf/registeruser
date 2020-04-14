@@ -4,11 +4,16 @@ import (
 	"context"
 	"registeruser/app/admin/entity/dao"
 	"registeruser/app/admin/entity/request"
+	"registeruser/app/admin/entity/response"
 )
 
-func (s *Service) ApiFindAll(ctx context.Context, page, page_size int64) (list []dao.AdminApi, err error) {
+func (s *Service) ApiFindAll(ctx context.Context, page, page_size int64) (responseData *response.ResponsePage, err error) {
 	offset := (page - 1) * page_size
-	list, err = s.adminApiModel.FindAll(ctx, offset, page_size)
+	list, count, err := s.adminApiModel.FindAll(ctx, offset, page_size)
+	if err != nil {
+		return
+	}
+	responseData = s.Page(count, page, page_size, int64(len(list)), &list)
 	return
 }
 
@@ -17,9 +22,13 @@ func (s *Service) ApiFindByID(ctx context.Context, id int64) (data *dao.AdminApi
 	return
 }
 
-func (s *Service) ApiSearch(ctx context.Context, method, path string, page, page_size int64) (list []dao.AdminApi, err error) {
+func (s *Service) ApiSearch(ctx context.Context, method, path string, page, page_size int64) (responseData *response.ResponsePage, err error) {
 	offset := (page - 1) * page_size
-	list, err = s.adminApiModel.Search(ctx, method, path, offset, page_size)
+	list, count, err := s.adminApiModel.Search(ctx, method, path, offset, page_size)
+	if err != nil {
+		return
+	}
+	responseData = s.Page(count, page, page_size, int64(len(list)), &list)
 	return
 }
 
