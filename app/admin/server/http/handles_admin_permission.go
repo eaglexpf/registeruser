@@ -15,6 +15,7 @@ func registerPermissionGroup(route *gin.RouterGroup) {
 	permission.GET("/search", permissionSearch)
 	permission.POST("/", permissionRegister)
 	permission.PUT("/", permissionDelete)
+	// 注册请求和服务的对应关系
 }
 
 /**

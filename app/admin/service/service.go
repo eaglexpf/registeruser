@@ -13,6 +13,7 @@ func NewService() *Service {
 		adminUserModel:      mysql.NewAdminUserModel(),
 		adminRoleModel:      mysql.NewAdminRoleModel(),
 		adminApiModel:       mysql.NewAdminApiModel(),
+		adminServiceModel:   mysql.NewAdminServiceModel(),
 		adminPermissionMode: mysql.NewAdminPermissionModel(),
 	}
 }
@@ -29,11 +30,16 @@ type ServiceInter interface {
 	Page(count, page, page_size, page_count int64, list interface{}) *response.ResponsePage
 }
 
+func (s *Service) RegisterAuth() {
+
+}
+
 // service服务类型
 type Service struct {
 	adminUserModel      model.AdminUserModel
 	adminRoleModel      model.AdminRoleModel
 	adminApiModel       model.AdminApiModel
+	adminServiceModel   model.AdminServiceModel
 	adminPermissionMode model.AdminPermissionModel
 }
 

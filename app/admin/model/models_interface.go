@@ -34,9 +34,22 @@ type AdminApiModel interface {
 	DeleteByID(context.Context, int64) error
 }
 
+type AdminServiceModel interface {
+	Search(ctx context.Context, search *dao.AdminServiceSearch, offset, limit int64) ([]dao.AdminService, error)
+	SearchCount(ctx context.Context, search *dao.AdminServiceSearch) int64
+	FindByID(context.Context, int64) (*dao.AdminService, error)
+	FindByName(ctx context.Context, name string) (*dao.AdminService, error)
+	Register(context.Context, *dao.AdminService) error
+	UpdateByID(context.Context, *dao.AdminService) error
+	DeleteByID(context.Context, int64) error
+	DeleteByName(ctx context.Context, name string) error
+}
+
 type AdminPermissionModel interface {
 	Search(ctx context.Context, search *dao.AdminPermission, offset, limit int64) (result []dao.AdminPermission, err error)
 	SearchCount(ctx context.Context, search *dao.AdminPermission) int64
 	Register(ctx context.Context, permission *dao.AdminPermission) error
 	DeleteInfo(ctx context.Context, permission *dao.AdminPermission) error
+	FindPermissionListByUserID(ctx context.Context, id int64, apiIDS []int64) (result []int64)
+	FindPermissionListByRoleID(ctx context.Context, id int64, apiIDS []int64) []int64
 }

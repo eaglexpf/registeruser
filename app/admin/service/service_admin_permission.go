@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"registeruser/app/admin/entity/dao"
 	"registeruser/app/admin/entity/request"
 	"registeruser/app/admin/entity/response"
@@ -29,6 +30,11 @@ func (s *Service) PermissionSearch(ctx context.Context, searchRequest *request.R
 	}
 	count := s.adminPermissionMode.SearchCount(ctx, search)
 	responseData = s.Page(count, searchRequest.Page, searchRequest.PageSize, int64(len(list)), list)
+	var id int64
+	id = 1
+	var ids []int64
+	ids = s.adminPermissionMode.FindPermissionListByUserID(ctx, id, ids)
+	fmt.Println("ids", ids)
 	return
 }
 

@@ -22,6 +22,9 @@ const (
 	QUERY_PERMISSION_DELETE_INFO              = `delete from admin_permission where parent_id=? and parent_type=? and children_id=? and children_type=?`
 	QUERY_PERMISSION_DELETE_BY_PARENT         = `delete from admin_permission where parent_id=? and parent_type=?`
 	QUERY_PERMISSION_DELETE_BY_CHILDREN       = `delete from admin_permission where children_id=? and children_type=?`
+
+	QUERY_PERMISSION_ROLE_CHILDREN = `select * from admin_permission where parent_id=? and parent_type="role"`
+	QUERY_PERMISSION_USER_CHILDREN = `select * from admin_permission where parent_id=? and parent_type="user"`
 )
 
 func NewAdminPermissionModel() model.AdminPermissionModel {
@@ -32,6 +35,7 @@ type permissionModel struct {
 	*sql_util.SqlUtil
 }
 
+// 检查parent_type和children_type是否正确
 func (p *permissionModel) check(data *dao.AdminPermission) error {
 	if data.ParentType != "" {
 		if data.ParentType != "user" && data.ParentType != "role" {
@@ -46,6 +50,7 @@ func (p *permissionModel) check(data *dao.AdminPermission) error {
 	return nil
 }
 
+// 查询列表
 func (p *permissionModel) Search(ctx context.Context, search *dao.AdminPermission, offset, limit int64) (result []dao.AdminPermission, err error) {
 	if err = p.check(search); err != nil {
 		return
@@ -63,6 +68,7 @@ func (p *permissionModel) Search(ctx context.Context, search *dao.AdminPermissio
 	return
 }
 
+// 按查询条件获取总条数
 func (p *permissionModel) SearchCount(ctx context.Context, search *dao.AdminPermission) int64 {
 	var result map[string]interface{}
 	var err error
@@ -71,7 +77,7 @@ func (p *permissionModel) SearchCount(ctx context.Context, search *dao.AdminPerm
 	}
 	switch true {
 	case search.ParentType != "" && search.ParentID > 0 && search.ChildrenType != "" && search.ChildrenID > 0:
-		result, err = p.FetchMapRow(ctx, QUERY_PERMISSION_SEARCH_BY_PARENT_COUNT, search.ParentID, search.ParentType, search.ChildrenID, search.ChildrenType)
+		result, err = p.FetchMapRow(ctx, QUERY_PERMISSION_SEARCH_INFO_COUNT, search.ParentID, search.ParentType, search.ChildrenID, search.ChildrenType)
 	case search.ParentType != "" && search.ParentID > 0:
 		result, err = p.FetchMapRow(ctx, QUERY_PERMISSION_SEARCH_BY_PARENT_COUNT, search.ParentID, search.ParentType)
 	case search.ChildrenType != "" && search.ChildrenID > 0:
@@ -88,6 +94,7 @@ func (p *permissionModel) SearchCount(ctx context.Context, search *dao.AdminPerm
 	return result["count"].(int64)
 }
 
+// 注册
 func (p *permissionModel) Register(ctx context.Context, data *dao.AdminPermission) error {
 	if err := p.check(data); err != nil {
 		return err
@@ -96,6 +103,7 @@ func (p *permissionModel) Register(ctx context.Context, data *dao.AdminPermissio
 	return err
 }
 
+// 删除
 func (p *permissionModel) DeleteInfo(ctx context.Context, data *dao.AdminPermission) (err error) {
 	if err := p.check(data); err != nil {
 		return err
@@ -111,4 +119,82 @@ func (p *permissionModel) DeleteInfo(ctx context.Context, data *dao.AdminPermiss
 		err = errors.New("无效的查询条件")
 	}
 	return
+}
+
+// 查询用户下的所有权限
+func (p *permissionModel) FindPermissionListByUserID(ctx context.Context, id int64, apiIDS []int64) (result []int64) {
+	data, err := p.FetchMap(ctx, QUERY_PERMISSION_USER_CHILDREN, id)
+	if err != nil {
+		return
+	}
+	if len(data) > 0 {
+		for _, v := range data {
+			children_type, ok := v["children_type"]
+			if !ok {
+				continue
+			}
+			children_type_str, ok := children_type.(string)
+			if !ok {
+				continue
+			}
+			children_id, ok := v["children_id"]
+			if !ok {
+				continue
+			}
+			children_id_int64, ok := children_id.(int64)
+			if !ok {
+				continue
+			}
+			if children_type_str == "api" {
+				apiIDS = append(apiIDS, children_id_int64)
+				continue
+			}
+			if children_type_str == "role" {
+				children_ids := p.FindPermissionListByRoleID(ctx, children_id_int64, apiIDS)
+				apiIDS = append(apiIDS, children_ids...)
+			}
+
+		}
+
+	}
+	return apiIDS
+}
+
+// 查询角色下所有的权限
+func (p *permissionModel) FindPermissionListByRoleID(ctx context.Context, id int64, apiIDS []int64) (result []int64) {
+	data, err := p.FetchMap(ctx, QUERY_PERMISSION_ROLE_CHILDREN, id)
+	if err != nil {
+		return
+	}
+	if len(data) > 0 {
+		for _, v := range data {
+			children_type, ok := v["children_type"]
+			if !ok {
+				continue
+			}
+			children_type_str, ok := children_type.(string)
+			if !ok {
+				continue
+			}
+			children_id, ok := v["children_id"]
+			if !ok {
+				continue
+			}
+			children_id_int64, ok := children_id.(int64)
+			if !ok {
+				continue
+			}
+			if children_type_str == "api" {
+				apiIDS = append(apiIDS, children_id_int64)
+				continue
+			}
+			if children_type_str == "role" {
+				children_ids := p.FindPermissionListByRoleID(ctx, children_id_int64, apiIDS)
+				apiIDS = append(apiIDS, children_ids...)
+			}
+
+		}
+
+	}
+	return apiIDS
 }

@@ -31,6 +31,7 @@ func Register(r *gin.Engine) {
 
 		registerRoleGroup(router)
 		registerApiGroup(router)
+		registerServiceGroup(router)
 		registerPermissionGroup(router)
 	}
 }

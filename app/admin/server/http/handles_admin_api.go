@@ -9,7 +9,7 @@ import (
 )
 
 /**
- * @apiDefine api_group_103 3.API管理
+ * @apiDefine api_group_109 3.API管理
  */
 
 func registerApiGroup(router *gin.RouterGroup) {
@@ -25,7 +25,7 @@ func registerApiGroup(router *gin.RouterGroup) {
 /**
  * @api {get} /admin/api/ 1.API列表
  * @apiDescription 获取API列表
- * @apiGroup api_group_103
+ * @apiGroup api_group_109
  * @apiVersion 1.0.0
  *
  * @apiHeader {string} token jwt验证token
@@ -61,7 +61,7 @@ func apiFindAll(c *gin.Context) {
 /**
  * @api {get} /admin/api/id/:id 2.根据id查询
  * @apiDescription 根据id查询api
- * @apiGroup api_group_103
+ * @apiGroup api_group_109
  * @apiVersion 1.0.0
  *
  * @apiHeader {string} token jwt验证token
@@ -91,7 +91,7 @@ func apiFindByID(c *gin.Context) {
 /**
  * @api {get} /admin/api/search 3.搜索
  * @apiDescription 搜索api；path模糊搜索
- * @apiGroup api_group_103
+ * @apiGroup api_group_109
  * @apiVersion 1.0.0
  *
  * @apiHeader {string} token jwt验证token
@@ -131,7 +131,7 @@ func apiFindBySearch(c *gin.Context) {
 /**
  * @api {post} /admin/api/ 4.注册新api
  * @apiDescription 创建一个新的api
- * @apiGroup api_group_103
+ * @apiGroup api_group_109
  * @apiVersion 1.0.0
  *
  * @apiHeader {string} token jwt验证token
@@ -162,7 +162,7 @@ func apiRegister(c *gin.Context) {
 /**
  * @api {put} /admin/api/id/:id 5.修改api
  * @apiDescription 创建一个新的api
- * @apiGroup api_group_103
+ * @apiGroup api_group_109
  * @apiVersion 1.0.0
  *
  * @apiHeader {string} token jwt验证token
@@ -199,7 +199,7 @@ func apiUpdateByID(c *gin.Context) {
 /**
  * @api {delete} /admin/api/id/:id 6.删除api
  * @apiDescription 根据id删除api
- * @apiGroup api_group_103
+ * @apiGroup api_group_109
  * @apiVersion 1.0.0
  *
  * @apiHeader {string} token jwt验证token
