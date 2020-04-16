@@ -15,6 +15,46 @@ var (
 	REDIS *redis.Client
 )
 
+func init() {
+	CONFIG = config{
+		App: config_app{
+			Addr:  "5000",
+			Mysql: true,
+			Redis: true,
+		},
+		Log: config_log{
+			File: config_log_file{
+				Status:  true,
+				Path:    "./temp/log",
+				MaxSize: 1,
+				DayNum:  7,
+				FileNum: 20,
+			},
+		},
+		Jwt: config_jwt{
+			Sign:    "register",
+			Express: 7200,
+			Issuer:  "register",
+		},
+		Mysql: config_mysql{
+			Addr:        "localhost:3306",
+			DbName:      "register",
+			Password:    "123456",
+			Config:      "",
+			Prefix:      "",
+			MaxIdleConn: 10,
+			MaxOpenConn: 10,
+			LogMode:     true,
+		},
+		Redis: config_redis{
+			Addr:              "localhost:6379",
+			Password:          "",
+			Db:                0,
+			ExpireUserService: 7200,
+		},
+	}
+}
+
 // 配置文件内容
 type config struct {
 	App   config_app   `json:"app"`
@@ -67,7 +107,8 @@ type config_mysql struct {
 
 // redis的配置内容
 type config_redis struct {
-	Addr     string `json:"addr"`
-	Password string `json:"password"`
-	Db       int    `json:"db"`
+	Addr              string `json:"addr"`
+	Password          string `json:"password"`
+	Db                int    `json:"db"`
+	ExpireUserService int64  `json:"expire_user_service"`
 }

@@ -19,7 +19,6 @@ type SqlUtil struct {
 }
 
 func (s *SqlUtil) FetchMap(ctx context.Context, query string, args ...interface{}) (result []map[string]interface{}, err error) {
-	fmt.Println(query, args)
 	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return
