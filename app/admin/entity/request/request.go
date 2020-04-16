@@ -1,6 +1,11 @@
 // 请求数据定义
 package request
 
+type RequestPage struct {
+	Page     int64 `form:"page" json:"page"`
+	PageSize int64 `form:"page_size" json:"page_size"`
+}
+
 // 请求类型：注册后台用户
 type RequestRegisterAdminUser struct {
 	Username  string `form:"username" json:"username" xml:"username" binding:"required"`

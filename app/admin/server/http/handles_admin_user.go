@@ -8,10 +8,6 @@ import (
 	"registeruser/app/admin/entity/response"
 )
 
-func adminUserList(c *gin.Context) {
-	c.JSON(200, response.Success(nil))
-}
-
 /**
  * @apiDefine api_group_101 1.后台用户
  */
@@ -38,15 +34,13 @@ func adminUserList(c *gin.Context) {
  **/
 
 // 注册后台用户api
-func adminUserRegister(c *gin.Context) {
+func adminUserRegister(c *gin.Context) (err error) {
 	adminUser := new(request.RequestRegisterAdminUser)
-	if err := c.ShouldBind(adminUser); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
+	if err = c.ShouldBind(adminUser); err != nil {
 		return
 	}
-	_, err := srv.RegisterAdminUser(c, adminUser)
+	_, err = srv.RegisterAdminUser(c, adminUser)
 	if err != nil {
-		c.JSON(http.StatusOK, response.Error(400, err.Error()))
 		return
 	}
 
@@ -70,15 +64,13 @@ func adminUserRegister(c *gin.Context) {
  **/
 
 // 后台用户登录api
-func adminUserLogin(c *gin.Context) {
+func adminUserLogin(c *gin.Context) (err error) {
 	adminUser := new(request.RequestAdminUserLogin)
-	if err := c.ShouldBind(adminUser); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
+	if err = c.ShouldBind(adminUser); err != nil {
 		return
 	}
 	token, err := srv.LoginForAdminUser(c, adminUser)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(token))
@@ -100,21 +92,20 @@ func adminUserLogin(c *gin.Context) {
  **/
 
 // 后台用户刷新token
-func adminUserRefreshToken(c *gin.Context) {
+func adminUserRefreshToken(c *gin.Context) (err error) {
 	user, ok := c.Get("adminUser")
 	if !ok {
-		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser获取失败"))
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 	adminUser, ok := user.(*dao.AdminUser)
 	if !ok {
-		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser类型获取失败"))
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 
 	token, err := srv.RefreshTokenByAdminUser(c, adminUser)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorRegisterAdminUser())
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(token))
@@ -138,30 +129,28 @@ func adminUserRefreshToken(c *gin.Context) {
  **/
 
 // 修改后台用户基本信息
-func adminUserUpdateInfo(c *gin.Context) {
+func adminUserUpdateInfo(c *gin.Context) (err error) {
 	user, ok := c.Get("adminUser")
 	if !ok {
-		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser获取失败"))
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 	adminUser, ok := user.(*dao.AdminUser)
 	if !ok {
-		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser类型获取失败"))
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 
 	var updateData request.RequestAdminUserUpdateInfo
-	if err := c.ShouldBind(&updateData); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
+	if err = c.ShouldBind(&updateData); err != nil {
 		return
 	}
 	if updateData.UUID == "" {
 		updateData.UUID = adminUser.UUID
 	}
 
-	adminUser, err := srv.UpdateAdminUserInfo(c, &updateData)
+	adminUser, err = srv.UpdateAdminUserInfo(c, &updateData)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
 		return
 	}
 
@@ -186,29 +175,28 @@ func adminUserUpdateInfo(c *gin.Context) {
  **/
 
 // 修改后台用户密码
-func adminUserUpdatePwd(c *gin.Context) {
+func adminUserUpdatePwd(c *gin.Context) (err error) {
 	user, ok := c.Get("adminUser")
 	if !ok {
-		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser获取失败"))
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 	adminUser, ok := user.(*dao.AdminUser)
 	if !ok {
-		c.JSON(http.StatusForbidden, response.Error(http.StatusForbidden, "adminUser类型获取失败"))
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 
 	var updateData request.RequestAdminUserResetPwd
-	if err := c.ShouldBind(&updateData); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
+	if err = c.ShouldBind(&updateData); err != nil {
+		return
 	}
 	if updateData.UUID == "" {
 		updateData.UUID = adminUser.UUID
 	}
 
-	adminUser, err := srv.ResetPwdForAdminUser(c, &updateData)
+	adminUser, err = srv.ResetPwdForAdminUser(c, &updateData)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
 		return
 	}
 

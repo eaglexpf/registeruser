@@ -14,12 +14,12 @@ import (
 
 func registerServiceGroup(router *gin.RouterGroup) {
 	service := router.Group("/service")
-	service.GET("/row/:id", adminServiceFindByID)
-	service.GET("/search", adminServiceSearch)
-	service.POST("/", adminServiceRegister)
-	service.PUT("/row/:id", adminServiceUpdate)
-	service.DELETE("/id/:id", adminServiceDelByID)
-	service.DELETE("/name/:name", adminServiceDelByName)
+	service.GET("/row/:id", GinHandler(adminServiceFindByID))
+	service.GET("/search", GinHandler(adminServiceSearch))
+	service.POST("/", GinHandler(adminServiceRegister))
+	service.PUT("/row/:id", GinHandler(adminServiceUpdate))
+	service.DELETE("/id/:id", GinHandler(adminServiceDelByID))
+	service.DELETE("/name/:name", GinHandler(adminServiceDelByName))
 }
 
 /**
@@ -36,15 +36,14 @@ func registerServiceGroup(router *gin.RouterGroup) {
  * @apiSuccess {object} data 返回数据
  *
  **/
-func adminServiceFindByID(c *gin.Context) {
+func adminServiceFindByID(c *gin.Context) (err error) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 	data, err := srv.ServiceFindByID(c, id)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(data))
@@ -69,15 +68,13 @@ func adminServiceFindByID(c *gin.Context) {
  * @apiSuccess {object} data 返回数据
  *
  **/
-func adminServiceSearch(c *gin.Context) {
+func adminServiceSearch(c *gin.Context) (err error) {
 	var search request.RequestServiceSearch
-	if err := c.ShouldBind(&search); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
+	if err = c.ShouldBind(&search); err != nil {
 		return
 	}
 	data, err := srv.ServiceSearch(c, &search)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(data))
@@ -102,15 +99,13 @@ func adminServiceSearch(c *gin.Context) {
  * @apiSuccess {object} data 返回数据
  *
  **/
-func adminServiceRegister(c *gin.Context) {
+func adminServiceRegister(c *gin.Context) (err error) {
 	var data request.RequestServiceRegister
-	if err := c.ShouldBind(&data); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
+	if err = c.ShouldBind(&data); err != nil {
 		return
 	}
-	err := srv.ServiceRegister(c, &data)
+	err = srv.ServiceRegister(c, &data)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(struct{}{}))
@@ -136,20 +131,18 @@ func adminServiceRegister(c *gin.Context) {
  * @apiSuccess {object} data 返回数据
  *
  **/
-func adminServiceUpdate(c *gin.Context) {
+func adminServiceUpdate(c *gin.Context) (err error) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 	var data request.RequestServiceUpdate
-	if err := c.ShouldBind(&data); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
+	if err = c.ShouldBind(&data); err != nil {
 		return
 	}
 	err = srv.ServiceUpdateByID(c, &data, id)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(struct{}{}))
@@ -170,15 +163,14 @@ func adminServiceUpdate(c *gin.Context) {
  * @apiSuccess {object} data 返回数据
  *
  **/
-func adminServiceDelByID(c *gin.Context) {
+func adminServiceDelByID(c *gin.Context) (err error) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 	err = srv.ServiceDeleteByID(c, id)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(struct{}{}))
@@ -199,11 +191,10 @@ func adminServiceDelByID(c *gin.Context) {
  * @apiSuccess {object} data 返回数据
  *
  **/
-func adminServiceDelByName(c *gin.Context) {
+func adminServiceDelByName(c *gin.Context) (err error) {
 	name := c.Param("name")
-	err := srv.ServiceDeleteByName(c, name)
+	err = srv.ServiceDeleteByName(c, name)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(struct{}{}))

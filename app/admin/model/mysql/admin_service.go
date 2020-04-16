@@ -8,11 +8,13 @@ import (
 	"registeruser/app/admin/model"
 	"registeruser/conf/global"
 	"registeruser/util/sql_util"
+	"strings"
 	"time"
 )
 
 const (
 	QUERY_SERVICE_FIND_BY_ID   = `select * from admin_service where id=?`
+	QUERY_SERVICE_FIND_BY_IDS  = `select * from admin_service where id in (%s)`
 	QUERY_SERVICE_FIND_BY_NAME = `select * from admin_service where name=?`
 
 	QUERY_SERVICE_SEARCH_ALL                  = `select * from admin_service limit ?,?`
@@ -137,6 +139,18 @@ func (s *serviceModel) FindByName(ctx context.Context, name string) (*dao.AdminS
 	var request dao.AdminService
 	err := s.FetchRow(ctx, QUERY_SERVICE_FIND_BY_NAME, &request, name)
 	return &request, err
+}
+
+func (s *serviceModel) FindByIds(ctx context.Context, ids []int64) (result []dao.AdminService, err error) {
+	var temp_ids []interface{}
+	var temp_where []string
+	for _, v := range ids {
+		temp_where = append(temp_where, "?")
+		temp_ids = append(temp_ids, v)
+	}
+	temp_query := fmt.Sprintf(QUERY_SERVICE_FIND_BY_IDS, strings.Join(temp_where, ","))
+	err = s.Fetch(ctx, temp_query, &result, temp_ids...)
+	return
 }
 
 func (s *serviceModel) Register(ctx context.Context, data *dao.AdminService) error {

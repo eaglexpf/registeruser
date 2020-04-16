@@ -14,11 +14,11 @@ import (
 
 func registerRoleGroup(router *gin.RouterGroup) {
 	role := router.Group("/role")
-	role.GET("/", roleFindAll)
-	role.POST("/", roleRegister)
-	role.GET("/:id", roleFindByID)
-	role.PUT("/:id", roleUpdateByID)
-	role.DELETE("/:id", roleDeleteByID)
+	role.GET("/", GinHandler(roleFindAll))
+	role.POST("/", GinHandler(roleRegister))
+	role.GET("/:id", GinHandler(roleFindByID))
+	role.PUT("/:id", GinHandler(roleUpdateByID))
+	role.DELETE("/:id", GinHandler(roleDeleteByID))
 }
 
 /**
@@ -37,20 +37,13 @@ func registerRoleGroup(router *gin.RouterGroup) {
  *
  **/
 // 查询角色列表api
-func roleFindAll(c *gin.Context) {
-	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
+func roleFindAll(c *gin.Context) (err error) {
+	var requestData request.RequestPage
+	if err = c.ShouldBind(&requestData); err != nil {
 		return
 	}
-	page_size, err := strconv.ParseInt(c.DefaultQuery("page_size", "10"), 10, 64)
+	list, err := srv.FindRoleList(c, requestData.Page, requestData.PageSize)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
-		return
-	}
-	list, err := srv.FindRoleList(c, page, page_size)
-	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(list))
@@ -72,15 +65,14 @@ func roleFindAll(c *gin.Context) {
  *
  **/
 // 查询角色信息api
-func roleFindByID(c *gin.Context) {
+func roleFindByID(c *gin.Context) (err error) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 	adminRole, err := srv.FindAdminRoleByID(c, id)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(adminRole))
@@ -103,18 +95,17 @@ func roleFindByID(c *gin.Context) {
  *
  **/
 // 注册一个新角色
-func roleRegister(c *gin.Context) {
+func roleRegister(c *gin.Context) (err error) {
 	request_admin_role := new(request.RequestAdminRoleRegister)
-	if err := c.ShouldBind(request_admin_role); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
+	if err = c.ShouldBind(request_admin_role); err != nil {
 		return
 	}
 	rsponse_admin_role, err := srv.RegisterAdminRole(c, request_admin_role)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
 		return
 	}
 	c.JSON(200, response.Success(rsponse_admin_role))
+	return
 }
 
 /**
@@ -134,23 +125,23 @@ func roleRegister(c *gin.Context) {
  *
  **/
 // 修改一个角色
-func roleUpdateByID(c *gin.Context) {
+func roleUpdateByID(c *gin.Context) (err error) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 	request_admin_role_update := new(request.RequestAdminRoleUpdate)
-	if err := c.ShouldBind(request_admin_role_update); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
+	if err = c.ShouldBind(request_admin_role_update); err != nil {
 		return
 	}
 	request_admin_role_update.ID = id
 	response_admin_role, err := srv.UpdateRoleByID(c, request_admin_role_update)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
 		return
 	}
 	c.JSON(200, response.Success(response_admin_role))
+	return
 }
 
 /**
@@ -168,15 +159,16 @@ func roleUpdateByID(c *gin.Context) {
  *
  **/
 // 删除一个角色
-func roleDeleteByID(c *gin.Context) {
+func roleDeleteByID(c *gin.Context) (err error) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
+		err = response.ERROR_PARAM_VALIDATE
 		return
 	}
 	err = srv.DeleteAdminRoleByID(c, id)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateData(err.Error()))
 		return
 	}
 	c.JSON(200, response.Success(nil))
+	return
 }

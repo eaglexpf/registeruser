@@ -43,8 +43,8 @@ func (p *permissionModel) check(data *dao.AdminPermission) error {
 		}
 	}
 	if data.ChildrenType != "" {
-		if data.ChildrenType != "role" && data.ChildrenType != "api" {
-			return errors.New("children_type类型只能为【role,api】")
+		if data.ChildrenType != "role" && data.ChildrenType != "api" && data.ChildrenType != "service" {
+			return errors.New("children_type类型只能为【role,api,service】")
 		}
 	}
 	return nil
@@ -145,7 +145,11 @@ func (p *permissionModel) FindPermissionListByUserID(ctx context.Context, id int
 			if !ok {
 				continue
 			}
-			if children_type_str == "api" {
+			//if children_type_str == "api" {
+			//	apiIDS = append(apiIDS, children_id_int64)
+			//	continue
+			//}
+			if children_type_str == "service" {
 				apiIDS = append(apiIDS, children_id_int64)
 				continue
 			}
@@ -184,7 +188,11 @@ func (p *permissionModel) FindPermissionListByRoleID(ctx context.Context, id int
 			if !ok {
 				continue
 			}
-			if children_type_str == "api" {
+			//if children_type_str == "api" {
+			//	apiIDS = append(apiIDS, children_id_int64)
+			//	continue
+			//}
+			if children_type_str == "service" {
 				apiIDS = append(apiIDS, children_id_int64)
 				continue
 			}

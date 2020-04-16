@@ -2,15 +2,33 @@ package service
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"registeruser/app/admin/entity/dao"
 	"registeruser/app/admin/entity/request"
 	"registeruser/app/admin/entity/response"
+	"registeruser/conf/log"
 )
+
+// 检查parent_type和children_type是否正确
+func (s *Service) checkDaoAdminPermission(data *dao.AdminPermission) error {
+	if data.ParentType != "" {
+		if data.ParentType != "user" && data.ParentType != "role" {
+			return response.ERROR_PERMISSION_DAO_PARENT_TYPE
+		}
+	}
+	if data.ChildrenType != "" {
+		if data.ChildrenType != "role" && data.ChildrenType != "api" && data.ChildrenType != "service" {
+			return response.ERROR_PERMISSION_DAO_CHILDREN_TYPE
+		}
+	}
+	return nil
+}
 
 // 查询权限
 func (s *Service) PermissionSearch(ctx context.Context, searchRequest *request.RequestPermissionSearch) (responseData *response.ResponsePage, err error) {
+	err = s.AuthCheck(ctx, "admin.permission.search")
+	if err != nil {
+		return
+	}
 	if searchRequest.Page == 0 {
 		searchRequest.Page = 1
 	}
@@ -24,51 +42,83 @@ func (s *Service) PermissionSearch(ctx context.Context, searchRequest *request.R
 		ChildrenID:   searchRequest.ChildrenID,
 		ChildrenType: searchRequest.ChildrenType,
 	}
-	list, err := s.adminPermissionMode.Search(ctx, search, offset, searchRequest.PageSize)
+	// 检查数据是否正确
+	err = s.checkDaoAdminPermission(search)
 	if err != nil {
 		return
 	}
-	count := s.adminPermissionMode.SearchCount(ctx, search)
+
+	list, err := s.adminPermissionModel.Search(ctx, search, offset, searchRequest.PageSize)
+	if err != nil {
+		// 权限分配列表查询失败
+		log.Errorf("权限分配列表查询失败，失败原因：%s", err.Error())
+		err = response.ERROR_PERMISSION_LIST
+	}
+	count := s.adminPermissionModel.SearchCount(ctx, search)
 	responseData = s.Page(count, searchRequest.Page, searchRequest.PageSize, int64(len(list)), list)
-	var id int64
-	id = 1
-	var ids []int64
-	ids = s.adminPermissionMode.FindPermissionListByUserID(ctx, id, ids)
-	fmt.Println("ids", ids)
+
 	return
 }
 
 // 注册权限
-func (s *Service) PermissionRegister(ctx context.Context, insertRequest *request.RequestPermissionRegister) error {
+func (s *Service) PermissionRegister(ctx context.Context, insertRequest *request.RequestPermissionRegister) (err error) {
+	err = s.AuthCheck(ctx, "admin.permission.register")
+	if err != nil {
+		return
+	}
 	insert_data := &dao.AdminPermission{
 		ParentID:     insertRequest.ParentID,
 		ParentType:   insertRequest.ParentType,
 		ChildrenID:   insertRequest.ChildrenID,
 		ChildrenType: insertRequest.ChildrenType,
 	}
-	err := s.adminPermissionMode.Register(ctx, insert_data)
+	// 检查数据是否正确
+	err = s.checkDaoAdminPermission(insert_data)
+	if err != nil {
+		return
+	}
+	err = s.adminPermissionModel.Register(ctx, insert_data)
+	if err != nil {
+		// 权限分配添加失败
+		log.Errorf("权限分配添加失败，失败原因：%s", err.Error())
+		err = response.ERROR_PERMISSION_REGISTER
+	}
 	return err
 }
 
 // 删除权限
 func (s *Service) PermissionDelete(ctx context.Context, deleteRequest *request.RequestPermissionDelete) (err error) {
-	switch true {
-	case deleteRequest.ParentID > 0:
+	err = s.AuthCheck(ctx, "admin.permission.delete")
+	if err != nil {
+		return
+	}
+	if deleteRequest.ParentID > 0 {
 		if deleteRequest.ParentType == "" {
-			err = errors.New("父权限类型不能为空")
+			// 父权限类型不能为空
+			err = response.ERROR_PERMISSION_NONE_PARENT_TYPE
 		}
-	case deleteRequest.ParentType != "":
+	}
+	if deleteRequest.ParentType != "" {
 		if deleteRequest.ParentID == 0 {
-			err = errors.New("父权限id不能为空")
+			// 父权限id不能为空
+			err = response.ERROR_PERMISSION_NONE_PARENT_ID
 		}
-	case deleteRequest.ChildrenID > 0:
-		if deleteRequest.ChildrenType != "" {
-			err = errors.New("子权限类型不能为空")
+	}
+	if deleteRequest.ChildrenID > 0 {
+		if deleteRequest.ChildrenType == "" {
+			// 子权限类型不能为空
+			err = response.ERROR_PERMISSION_NONE_CHILDREN_TYPE
 		}
-	case deleteRequest.ChildrenType != "":
+	}
+	if deleteRequest.ChildrenType != "" {
 		if deleteRequest.ChildrenID == 0 {
-			err = errors.New("子权限id不能为空")
+			// 子权限id不能为空
+			err = response.ERROR_PERMISSION_NONE_CHILDREN_ID
 		}
+	}
+	if deleteRequest.ParentType == "" && deleteRequest.ParentID == 0 && deleteRequest.ChildrenType == "" && deleteRequest.ChildrenID == 0 {
+		// 不能删除空节点
+		err = response.ERROR_PERMISSION_NONE
 	}
 	if err != nil {
 		return
@@ -79,6 +129,16 @@ func (s *Service) PermissionDelete(ctx context.Context, deleteRequest *request.R
 		ChildrenID:   deleteRequest.ChildrenID,
 		ChildrenType: deleteRequest.ChildrenType,
 	}
-	err = s.adminPermissionMode.DeleteInfo(ctx, data)
+	// 检查数据是否正确
+	err = s.checkDaoAdminPermission(data)
+	if err != nil {
+		return
+	}
+	err = s.adminPermissionModel.DeleteInfo(ctx, data)
+	if err != nil {
+		// 权限分配删除失败
+		log.Errorf("权限分配删除失败，失败原因：%s", err.Error())
+		err = response.ERROR_PERMISSION_DELETE
+	}
 	return
 }

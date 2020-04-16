@@ -12,9 +12,9 @@ import (
  */
 func registerPermissionGroup(route *gin.RouterGroup) {
 	permission := route.Group("/permission")
-	permission.GET("/search", permissionSearch)
-	permission.POST("/", permissionRegister)
-	permission.PUT("/", permissionDelete)
+	permission.GET("/search", GinHandler(permissionSearch))
+	permission.POST("/", GinHandler(permissionRegister))
+	permission.PUT("/", GinHandler(permissionDelete))
 	// 注册请求和服务的对应关系
 }
 
@@ -37,18 +37,17 @@ func registerPermissionGroup(route *gin.RouterGroup) {
  * @apiSuccess {object} data 返回数据
  *
  **/
-func permissionSearch(c *gin.Context) {
+func permissionSearch(c *gin.Context) (err error) {
 	var requestData request.RequestPermissionSearch
-	if err := c.ShouldBind(&requestData); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
+	if err = c.ShouldBind(&requestData); err != nil {
 		return
 	}
 	responseData, err := srv.PermissionSearch(c, &requestData)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(responseData))
+	return
 }
 
 /**
@@ -68,18 +67,17 @@ func permissionSearch(c *gin.Context) {
  * @apiSuccess {object} data 返回数据
  *
  **/
-func permissionRegister(c *gin.Context) {
+func permissionRegister(c *gin.Context) (err error) {
 	var requestData request.RequestPermissionRegister
-	if err := c.ShouldBind(&requestData); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
+	if err = c.ShouldBind(&requestData); err != nil {
 		return
 	}
-	err := srv.PermissionRegister(c, &requestData)
+	err = srv.PermissionRegister(c, &requestData)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(gin.H{}))
+	return
 }
 
 /**
@@ -99,16 +97,15 @@ func permissionRegister(c *gin.Context) {
  * @apiSuccess {object} data 返回数据
  *
  **/
-func permissionDelete(c *gin.Context) {
+func permissionDelete(c *gin.Context) (err error) {
 	var requestData request.RequestPermissionDelete
-	if err := c.ShouldBind(&requestData); err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
+	if err = c.ShouldBind(&requestData); err != nil {
 		return
 	}
-	err := srv.PermissionDelete(c, &requestData)
+	err = srv.PermissionDelete(c, &requestData)
 	if err != nil {
-		c.JSON(http.StatusOK, response.ErrorParamValidateMsg(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(gin.H{}))
+	return
 }

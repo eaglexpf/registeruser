@@ -17,7 +17,7 @@ import (
 func router(r *gin.Engine) *gin.Engine {
 	r.Use(gin_middleware.LoggerMiddleware())
 	r.Use(gin_middleware.CorsMiddleware())
-	r.Use(gin_middleware.RecoverMiddleware())
+	//r.Use(gin_middleware.RecoverMiddleware())
 	http_admin.Register(r)
 	return r
 }

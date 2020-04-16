@@ -38,6 +38,7 @@ type AdminServiceModel interface {
 	Search(ctx context.Context, search *dao.AdminServiceSearch, offset, limit int64) ([]dao.AdminService, error)
 	SearchCount(ctx context.Context, search *dao.AdminServiceSearch) int64
 	FindByID(context.Context, int64) (*dao.AdminService, error)
+	FindByIds(ctx context.Context, ids []int64) (result []dao.AdminService, err error)
 	FindByName(ctx context.Context, name string) (*dao.AdminService, error)
 	Register(context.Context, *dao.AdminService) error
 	UpdateByID(context.Context, *dao.AdminService) error

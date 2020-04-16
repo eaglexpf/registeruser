@@ -51,11 +51,6 @@ func newResponseNilData(code int64, msg string) *Response {
 	//}
 }
 
-// 成功：自定义返回数据
-func Success(data interface{}) *Response {
-	return newResponse(0, "Success", data)
-}
-
 // 失败；自定义类型和数据
 func Error(code int64, msg string) *Response {
 	return newResponseNilData(code, msg)
