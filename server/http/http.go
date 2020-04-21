@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	http_admin "registeruser/app/admin/server/http"
+	http_job "registeruser/app/job/server/http"
 	"registeruser/conf/global"
 	"registeruser/conf/log"
 	"registeruser/util/gin_middleware"
@@ -19,6 +20,7 @@ func router(r *gin.Engine) *gin.Engine {
 	r.Use(gin_middleware.CorsMiddleware())
 	//r.Use(gin_middleware.RecoverMiddleware())
 	http_admin.Register(r)
+	http_job.RegisterRouter(r)
 	return r
 }
 
